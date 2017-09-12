@@ -53,7 +53,7 @@ class EventDate
         $this->id = $body['sc'];
         $this->eventId = $body['spec'];
         $this->enabled = $body['aff'];
-        $this->name = trim($body['titre']);
+        $this->name = trim(str_replace('|', '\n', $body['titre']));
         $this->date = new \DateTime();
         $this->date->setTimestamp($body['date']);
         $this->place = trim($body['salle']);
