@@ -1,0 +1,20 @@
+{
+    "name": "rezozero/fsirius-sdk-v1",
+    "description": "Forum Sirius APIv1 PHP SDK",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ambroise Maupate",
+            "email": "ambroise@rezo-zero.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {"RZ\\": "src/"}
+    },
+    "require": {
+        "php": "^7.0",
+        "guzzlehttp/guzzle": "~5.3",
+        "doctrine/cache": "^1.6.2"
+    }
+}
