@@ -42,25 +42,32 @@ class Client
     private $eventId;
 
     /**
+     * @var string
+     */
+    private $responseType = TextResponse::class;
+
+    /**
      * Client constructor.
+     *
      * @param $endpoint
      * @param $clientId
      * @param CacheProvider|null $cacheProvider
+     * @param string $responseType
      */
-    public function __construct($endpoint, $clientId, CacheProvider $cacheProvider = null)
+    public function __construct($endpoint, $clientId, CacheProvider $cacheProvider = null, $responseType = TextResponse::class)
     {
         if (!filter_var($endpoint, FILTER_VALIDATE_URL)) {
             throw new \InvalidArgumentException('Endpoint must be a valid URL');
         }
 
         $this->endpoint = $endpoint;
+        $this->responseType = $responseType;
 
         $this->guzzleClient = new \GuzzleHttp\Client([
             'base_url' => $endpoint,
             'defaults' => [
                 'headers' => [
-                    'Accept' => 'text/plain',
-                    'Content-Type' => 'text/plain',
+                    'Accept' => call_user_func([$this->responseType, 'getContentType']),
                     'X-Origin' => 'RZ-FSirius-SDK',
                 ],
                 'timeout' => 3,
@@ -76,6 +83,33 @@ class Client
         $this->cacheProvider = $cacheProvider;
         $this->clientId = $clientId;
     }
+
+    /**
+     * @return string
+     */
+    public function getResponseType(): string
+    {
+        return $this->responseType;
+    }
+
+    /**
+     * @return $this
+     */
+    public function setTextResponseType()
+    {
+        $this->responseType = TextResponse::class;
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function setJsonResponseType()
+    {
+        $this->responseType = JsonResponse::class;
+        return $this;
+    }
+
 
     /**
      * @return CacheProvider|null
@@ -120,7 +154,8 @@ class Client
      */
     public function get($url, $options = [])
     {
-        return new TextResponse($this->getGuzzleClient()->get($url, $options));
+        $responseType = $this->getResponseType();
+        return new $responseType($this->getGuzzleClient()->get($url, $options));
     }
 
     /**

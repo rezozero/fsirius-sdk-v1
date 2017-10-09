@@ -4,14 +4,14 @@ namespace RZ\FSirius;
 
 use GuzzleHttp\Message\ResponseInterface;
 
-class TextResponse extends AbstractResponse
+class JsonResponse extends AbstractResponse
 {
     /**
      * @return string
      */
     public static function getContentType(): string
     {
-        return 'text/plain';
+        return 'application/json';
     }
 
     /**
@@ -33,6 +33,6 @@ class TextResponse extends AbstractResponse
         $this->body = $response->getBody();
         $this->response = $response;
 
-        parse_str($this->body, $this->params);
+        $this->params = json_decode($this->body, true);
     }
 }
