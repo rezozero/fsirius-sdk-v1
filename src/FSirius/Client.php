@@ -8,7 +8,7 @@ class Client
 {
     const SESSION_ID = 'fsirius_sdk_session';
     const CACHE_KEY_DOMAIN = 'fsirius_sdk_token';
-    const CACHE_TTL = 3500;
+    const CACHE_TTL = 120;
 
     const AVAILABLE_SEATS = 'V';
     const LATEST_SEATS = 'O';
@@ -44,7 +44,7 @@ class Client
     /**
      * @var string
      */
-    private $responseType = TextResponse::class;
+    private $responseType = JsonResponse::class;
 
     /**
      * Client constructor.
@@ -54,7 +54,7 @@ class Client
      * @param CacheProvider|null $cacheProvider
      * @param string $responseType
      */
-    public function __construct($endpoint, $clientId, CacheProvider $cacheProvider = null, $responseType = TextResponse::class)
+    public function __construct($endpoint, $clientId, CacheProvider $cacheProvider = null, $responseType = JsonResponse::class)
     {
         if (!filter_var($endpoint, FILTER_VALIDATE_URL)) {
             throw new \InvalidArgumentException('Endpoint must be a valid URL');
@@ -159,6 +159,15 @@ class Client
     }
 
     /**
+     * @param string $eventId
+     * @return string
+     */
+    protected function getEventQuery($eventId)
+    {
+        return 'spec='.$eventId;
+    }
+
+    /**
      * Get valid season items.
      *
      * @param array $options
@@ -188,7 +197,7 @@ class Client
         $eventDateIds = $this->get('/ListeSC', [
             'query' => [
                 'instPA' => $sessionToken,
-                'defSC' => 'SP='.$eventId,
+                'defSC' => $this->getEventQuery($eventId),
             ]
         ])->getParam('listeSC');
 
@@ -202,17 +211,18 @@ class Client
      */
     public function getEventDateParams($sessionToken, $eventId)
     {
-        $eventDateJSCode = $this->get('/ParamSC', [
+        $infosSC = $this->get('/ParamSC', [
             'query' => [
                 'instPA' => $sessionToken,
-                'defSC' => 'SP='.$eventId,
+                'defSC' => $this->getEventQuery($eventId),
             ]
         ])->getParam('infosSC');
 
-        $eventDateJson = str_replace('var apiParamSC = ', '', trim($eventDateJSCode));
-        $eventDateJson = preg_replace('#([\{|,])([a-zA-Z]+)\:#', '$1"$2":', $eventDateJson);
+        if (isset($infosSC['apiParamSC'])) {
+            return $infosSC['apiParamSC'];
+        }
 
-        return json_decode($eventDateJson, true);
+        return [];
     }
 
     /**
@@ -225,19 +235,60 @@ class Client
         $eventDatesResponse = $this->get('/DispoListeSC', [
             'query' => [
                 'instPA' => $sessionToken,
-                'defSC' => 'SP='.$eventId,
+                'defSC' => $this->getEventQuery($eventId),
             ]
         ]);
 
         $eventDates = [];
+        /*
+         * For the moment listeSC is still a imploded array
+         */
         $eventDateIds = explode(',', $eventDatesResponse->getParam('listeSC'));
-        $eventDateAvailability = explode('', $eventDatesResponse->getParam('dispoVOR'));
+        $eventCategories = explode(',', $eventDatesResponse->getParam('listeCat'));
+        $eventCategoriesCount = count($eventCategories);
+        /*
+         * dispoVOR is used for each SC AND Cat
+         */
+        $eventDateAvailability = str_split($eventDatesResponse->getParam('dispoVOR'));
 
         foreach ($eventDateIds as $i => $eventDateId) {
-            $eventDates[$eventDateId] = $eventDateAvailability[$i];
+            $eventAvailabilities = [];
+            foreach ($eventCategories as $j => $eventCategory) {
+                $eventAvailabilities[] = $eventDateAvailability[($i*$eventCategoriesCount)+$j];
+            }
+            $eventDates[$eventDateId] = $this->getMediumAvailabilities($eventAvailabilities);
         }
 
         return $eventDates;
+    }
+
+    /**
+     * @param array $availabilities
+     * @return string
+     */
+    protected function getMediumAvailabilities(array $availabilities = [])
+    {
+        if (count($availabilities) > 0) {
+            $numericDispo = [
+                static::FORBIDDEN_EVENT_DATE => 0,
+                static::AVAILABLE_SEATS => 1,
+                static::LATEST_SEATS => 2,
+                static::NO_MORE_SEATS => 3,
+            ];
+            $numericDispoKeys = array_keys($numericDispo);
+            $mediumDispo = 0.0;
+
+            foreach ($availabilities as $availability) {
+                if (isset($numericDispo[$availability])) {
+                    $mediumDispo += $numericDispo[$availability];
+                }
+            }
+
+            $mediumDispo /= count($availabilities);
+            return $numericDispoKeys[(int) floor($mediumDispo)];
+        }
+
+        return static::NO_MORE_SEATS;
     }
 
     /**
@@ -251,10 +302,11 @@ class Client
     {
         $eventDates = [];
         $eventDatesArray = $this->getEventDateParams($sessionToken, $eventId);
-        //$eventDatesAvailability = $this->getEventDateAvailability($sessionToken, $eventId);
+        $eventDatesAvailability = $this->getEventDateAvailability($sessionToken, $eventId);
+
         foreach ($eventDatesArray as $eventDateArray) {
             $eventDate = new EventDate($eventDateArray);
-            //$eventDate->setAvailability($eventDatesAvailability[$eventDate->getId()]);
+            $eventDate->setAvailability($eventDatesAvailability[$eventDate->getId()]);
             $eventDates[] = $eventDate;
         }
 
