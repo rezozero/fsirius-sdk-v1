@@ -15,3 +15,7 @@ Get a session token by calling:
 $client->setEventId($eventId); 
 $sessionToken = $client->getSessionToken();
 ```
+
+## Timezone
+
+Be careful, Forum Sirius API servers are using `Europe/Paris` timecode. Make sure your application is configured with the same timecode.

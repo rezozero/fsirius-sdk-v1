@@ -292,8 +292,6 @@ class Client
     }
 
     /**
-     * TODO: DispoListeSC is not available on API
-     *
      * @param string $sessionToken
      * @param string $eventId
      * @return EventDate[]
