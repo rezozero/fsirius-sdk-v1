@@ -53,31 +53,41 @@ class Client
      * @param $clientId
      * @param CacheProvider|null $cacheProvider
      * @param string $responseType
+     * @param null $proxy
      */
-    public function __construct($endpoint, $clientId, CacheProvider $cacheProvider = null, $responseType = JsonResponse::class)
-    {
+    public function __construct(
+        $endpoint,
+        $clientId,
+        CacheProvider $cacheProvider = null,
+        $responseType = JsonResponse::class,
+        $proxy = null
+    ) {
         if (!filter_var($endpoint, FILTER_VALIDATE_URL)) {
             throw new \InvalidArgumentException('Endpoint must be a valid URL');
         }
 
         $this->endpoint = $endpoint;
         $this->responseType = $responseType;
+        $config = [
+            'headers' => [
+                'Accept' => call_user_func([$this->responseType, 'getContentType']),
+                'X-Origin' => 'RZ-FSirius-SDK',
+            ],
+            'timeout' => 3,
+            'allow_redirects' => [
+                'max'       => 3,       // allow at most 10 redirects.
+                'strict'    => true,     // use "strict" RFC compliant redirects.
+                'referer'   => true,     // add a Referer header
+                'protocols' => ['http', 'https'] // only allow https URLs
+            ]
+        ];
+        if ($proxy !== null) {
+            $config['proxy'] = $proxy;
+        }
 
         $this->guzzleClient = new \GuzzleHttp\Client([
             'base_url' => $endpoint,
-            'defaults' => [
-                'headers' => [
-                    'Accept' => call_user_func([$this->responseType, 'getContentType']),
-                    'X-Origin' => 'RZ-FSirius-SDK',
-                ],
-                'timeout' => 3,
-                'allow_redirects' => [
-                    'max'       => 3,       // allow at most 10 redirects.
-                    'strict'    => true,     // use "strict" RFC compliant redirects.
-                    'referer'   => true,     // add a Referer header
-                    'protocols' => ['http', 'https'] // only allow https URLs
-                ]
-            ]
+            'defaults' => $config,
         ]);
 
         $this->cacheProvider = $cacheProvider;

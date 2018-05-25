@@ -44,6 +44,11 @@ class EventDate
     private $availability;
 
     /**
+     * @var \DateTime
+     */
+    private $ticketingOpening;
+
+    /**
      * EventDate constructor.
      * @param array $body
      */
@@ -58,6 +63,10 @@ class EventDate
         $this->date->setTimestamp($body['date']);
         $this->place = trim($body['salle']);
         $this->availability = Client::AVAILABLE_SEATS;
+        if ($body['ovl'] > -1) {
+            $this->ticketingOpening = new \DateTime();
+            $this->ticketingOpening->setTimestamp($body['ovl']);
+        }
     }
 
     /**
@@ -124,5 +133,13 @@ class EventDate
     {
         $this->availability = $availability;
         return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getTicketingOpening(): \DateTime
+    {
+        return $this->ticketingOpening;
     }
 }
