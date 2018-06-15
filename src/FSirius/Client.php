@@ -261,12 +261,17 @@ class Client
          */
         $eventDateAvailability = str_split($eventDatesResponse->getParam('dispoVOR'));
 
-        foreach ($eventDateIds as $i => $eventDateId) {
-            $eventAvailabilities = [];
-            foreach ($eventCategories as $j => $eventCategory) {
-                $eventAvailabilities[] = $eventDateAvailability[($i*$eventCategoriesCount)+$j];
+        if (count($eventDateAvailability) > 0) {
+            foreach ($eventDateIds as $i => $eventDateId) {
+                $eventAvailabilities = [];
+                foreach ($eventCategories as $j => $eventCategory) {
+                    $index = ($i*$eventCategoriesCount)+$j;
+                    if (isset($eventDateAvailability[$index])) {
+                        $eventAvailabilities[] = $eventDateAvailability[$index];
+                    }
+                }
+                $eventDates[$eventDateId] = $this->getMediumAvailabilities($eventAvailabilities);
             }
-            $eventDates[$eventDateId] = $this->getMediumAvailabilities($eventAvailabilities);
         }
 
         return $eventDates;
