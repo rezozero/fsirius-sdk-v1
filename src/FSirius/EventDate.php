@@ -66,6 +66,8 @@ class EventDate
         if ($body['ovl'] > -1) {
             $this->ticketingOpening = new \DateTime();
             $this->ticketingOpening->setTimestamp($body['ovl']);
+        } else {
+            $this->ticketingOpening = null;
         }
     }
 
@@ -136,9 +138,9 @@ class EventDate
     }
 
     /**
-     * @return \DateTime
+     * @return \DateTime|null
      */
-    public function getTicketingOpening(): \DateTime
+    public function getTicketingOpening()
     {
         return $this->ticketingOpening;
     }
