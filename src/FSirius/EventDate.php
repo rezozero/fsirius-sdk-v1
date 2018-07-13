@@ -44,7 +44,7 @@ class EventDate
     private $availability;
 
     /**
-     * @var \DateTime
+     * @var \DateTime|null
      */
     private $ticketingOpening;
 
