@@ -342,7 +342,12 @@ class Client
 
         foreach ($eventDatesArray as $eventDateArray) {
             $eventDate = new EventDate($eventDateArray);
-            $eventDate->setAvailability($eventDatesAvailability[$eventDate->getId()]);
+            /*
+             * Set event-date availability only if we got an availability for a given sessionId.
+             */
+            if ("" !== $eventDate->getId() && isset($eventDatesAvailability[$eventDate->getId()])) {
+                $eventDate->setAvailability($eventDatesAvailability[$eventDate->getId()]);
+            }
             $eventDates[] = $eventDate;
         }
 
