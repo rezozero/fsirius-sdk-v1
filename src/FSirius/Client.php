@@ -323,9 +323,10 @@ class Client
             if (in_array(static::LATEST_SEATS, $availabilities)) {
                 return static::LATEST_SEATS;
             }
+            return static::NO_MORE_SEATS;
         }
 
-        return static::NO_MORE_SEATS;
+        return static::UNAVAILABLE_INFO;
     }
 
     /**

@@ -7,6 +7,11 @@ $api_auth = include dirname(__FILE__) . "/api_auth.php";
 ini_set('date.timezone', 'Europe/Paris');
 
 try {
+    if (!isset($argv[1])) {
+        throw new InvalidArgumentException('You must specify an event ID');
+    }
+
+    $eventId = $argv[1];
     // Theses credentials are only available in API dev mode.
     $client = new \RZ\FSirius\Client(
         $api_auth['url'],
@@ -15,11 +20,11 @@ try {
         \RZ\FSirius\JsonResponse::class,
         $api_auth['proxy']
     );
-    $client->setEventId($api_auth['eventId']);
+    $client->setEventId($eventId);
     $sessionToken = $client->getSessionToken();
 
-    var_dump($client->getEventDates($sessionToken, $api_auth['eventId']));
-    var_dump($client->getEventDateAvailability($sessionToken, $api_auth['eventId']));
+    var_dump($client->getEventDates($sessionToken, $eventId));
+    var_dump($client->getEventDateAvailability($sessionToken, $eventId));
 } catch (\GuzzleHttp\Exception\ClientException $exception) {
     echo $exception->getMessage() . PHP_EOL;
     echo $exception->getResponse()->getBody(). PHP_EOL;
