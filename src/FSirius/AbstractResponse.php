@@ -2,13 +2,12 @@
 
 namespace RZ\FSirius;
 
-
 abstract class AbstractResponse
 {
     /**
      * @return string
      */
-    public abstract static function getContentType(): string;
+    abstract public static function getContentType(): string;
 
     /**
      * @var array

@@ -270,7 +270,7 @@ class Client
                         $eventAvailabilities[] = $eventDateAvailability[$index];
                     }
                 }
-                $eventDates[$eventDateId] = $this->getMediumAvailabilities($eventAvailabilities);
+                $eventDates[$eventDateId] = $this->getBestAvailabilities($eventAvailabilities);
             }
         }
 
@@ -278,6 +278,8 @@ class Client
     }
 
     /**
+     * Process availabilities with medium calculus.
+     *
      * @param array $availabilities
      * @return string
      */
@@ -301,6 +303,26 @@ class Client
 
             $mediumDispo /= count($availabilities);
             return $numericDispoKeys[(int) floor($mediumDispo)];
+        }
+
+        return static::NO_MORE_SEATS;
+    }
+
+    /**
+     * Process availabilities with at least one of the best availability found.
+     *
+     * @param array $availabilities
+     * @return string
+     */
+    protected function getBestAvailabilities(array $availabilities = [])
+    {
+        if (count($availabilities) > 0) {
+            if (in_array(static::AVAILABLE_SEATS, $availabilities)) {
+                return static::AVAILABLE_SEATS;
+            }
+            if (in_array(static::LATEST_SEATS, $availabilities)) {
+                return static::LATEST_SEATS;
+            }
         }
 
         return static::NO_MORE_SEATS;
