@@ -1,5 +1,4 @@
 <?php
-
 namespace RZ\FSirius;
 
 abstract class AbstractResponse

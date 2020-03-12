@@ -13,9 +13,10 @@
         "psr-4": {"RZ\\": "src/"}
     },
     "require": {
-        "php": "^7.0",
-        "guzzlehttp/guzzle": "~5.3",
-        "doctrine/cache": "^1.6.2"
+        "php": "^7.2",
+        "guzzlehttp/guzzle": "^6.5",
+        "doctrine/cache": "^1.6.2",
+        "ext-json": "*"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.3"

@@ -1,5 +1,4 @@
 <?php
-
 namespace RZ\FSirius;
 
 use Doctrine\Common\Cache\CacheProvider;
@@ -69,6 +68,7 @@ class Client
         $this->endpoint = $endpoint;
         $this->responseType = $responseType;
         $config = [
+            'base_uri' => $endpoint,
             'headers' => [
                 'Accept' => call_user_func([$this->responseType, 'getContentType']),
                 'X-Origin' => 'RZ-FSirius-SDK',
@@ -85,11 +85,7 @@ class Client
             $config['proxy'] = $proxy;
         }
 
-        $this->guzzleClient = new \GuzzleHttp\Client([
-            'base_url' => $endpoint,
-            'defaults' => $config,
-        ]);
-
+        $this->guzzleClient = new \GuzzleHttp\Client($config);
         $this->cacheProvider = $cacheProvider;
         $this->clientId = $clientId;
     }
@@ -332,7 +328,9 @@ class Client
     /**
      * @param string $sessionToken
      * @param string $eventId
+     *
      * @return EventDate[]
+     * @throws \Exception
      */
     public function getEventDates($sessionToken, $eventId)
     {

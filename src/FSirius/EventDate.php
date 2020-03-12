@@ -50,7 +50,10 @@ class EventDate
 
     /**
      * EventDate constructor.
+     *
      * @param array $body
+     *
+     * @throws \Exception
      */
     public function __construct(array $body)
     {

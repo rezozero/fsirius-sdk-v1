@@ -2,7 +2,7 @@
 
 namespace RZ\FSirius;
 
-use GuzzleHttp\Message\ResponseInterface;
+use Psr\Http\Message\ResponseInterface;
 
 class TextResponse extends AbstractResponse
 {
