@@ -48,21 +48,21 @@ class Client
     /**
      * Client constructor.
      *
-     * @param $endpoint
-     * @param $clientId
+     * @param string $endpoint
+     * @param string $clientId
      * @param CacheProvider|null $cacheProvider
      * @param string $responseType
-     * @param null $proxy
+     * @param string|null $proxy
      */
     public function __construct(
-        $endpoint,
-        $clientId,
+        string $endpoint,
+        string $clientId,
         CacheProvider $cacheProvider = null,
         $responseType = JsonResponse::class,
-        $proxy = null
+        string $proxy = null
     ) {
         if (!filter_var($endpoint, FILTER_VALIDATE_URL)) {
-            throw new \InvalidArgumentException('Endpoint must be a valid URL');
+            throw new \InvalidArgumentException('Endpoint ' . $endpoint . ' must be a valid URL');
         }
 
         $this->endpoint = $endpoint;
