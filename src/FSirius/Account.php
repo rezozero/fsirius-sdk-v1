@@ -3,8 +3,13 @@ declare(strict_types=1);
 
 namespace RZ\FSirius;
 
-final class Account
+use Symfony\Component\Security\Core\User\UserInterface;
+
+final class Account implements UserInterface
 {
+    const BASE_ROLE = 'ROLE_FORUMSIRIUS_USER';
+    const PRO_ROLE = 'ROLE_FORUMSIRIUS_PRO_USER';
+
     /**
      * @var string|null
      */
@@ -369,5 +374,51 @@ final class Account
         }
 
         return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getRoles()
+    {
+        return [
+            static::BASE_ROLE
+        ];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getPassword()
+    {
+        return null;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getSalt()
+    {
+        return null;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getUsername()
+    {
+        if (null === $this->getEmail()) {
+            throw new \RuntimeException('Account username cannot null');
+        }
+        return $this->getEmail();
+    }
+
+    /**
+     * @inheritDoc
+     * @return void
+     */
+    public function eraseCredentials()
+    {
+        // do nothing, there are no credentials in Sirius account
     }
 }

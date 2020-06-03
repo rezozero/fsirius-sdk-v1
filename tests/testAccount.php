@@ -21,9 +21,8 @@ try {
         \RZ\FSirius\JsonResponse::class,
         $api_auth['proxy']
     );
-    $sessionToken = $client->getSessionToken();
-
-    dump($client->getAccount($sessionToken, null, $argv[1]));
+    $accountProvider = new \RZ\FSirius\AccountProvider($client);
+    dump($accountProvider->loadUserByUsername($argv[1]));
 } catch (\GuzzleHttp\Exception\ClientException $exception) {
     echo $exception->getMessage() . PHP_EOL;
     echo $exception->getResponse()->getBody(). PHP_EOL;
