@@ -317,7 +317,7 @@ class Client
             }
             return null;
         }
-        throw new \InvalidArgumentException('You must provide a bix and a valid email');
+        throw new \InvalidArgumentException('You must provide a bix or a valid email');
     }
 
     /**
