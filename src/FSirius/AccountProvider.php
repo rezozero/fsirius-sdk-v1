@@ -28,7 +28,7 @@ class AccountProvider implements UserProviderInterface
     /**
      * @inheritDoc
      */
-    public function loadUserByUsername(string $username)
+    public function loadUserByUsername($username)
     {
         $sessionToken = $this->client->getSessionToken();
         if (null !== $sessionToken) {
@@ -59,7 +59,7 @@ class AccountProvider implements UserProviderInterface
     /**
      * @inheritDoc
      */
-    public function supportsClass(string $class)
+    public function supportsClass($class)
     {
         return $class === Account::class;
     }

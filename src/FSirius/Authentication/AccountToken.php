@@ -16,9 +16,9 @@ class AccountToken extends AbstractToken
     /**
      * AccountToken constructor.
      *
-     * @param UserInterface $user
-     * @param string        $providerKey
-     * @param array         $roles
+     * @param string|UserInterface $user
+     * @param string               $providerKey
+     * @param array                $roles
      */
     public function __construct($user, string $providerKey, array $roles = [])
     {

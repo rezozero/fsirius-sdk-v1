@@ -17,11 +17,11 @@
         "guzzlehttp/guzzle": "^6.5",
         "doctrine/cache": "^1.6.2",
         "ext-json": "*",
-        "symfony/security-core": "^4.4 || ^5.1"
+        "symfony/security-http": "^4.4"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.3",
         "phpstan/phpstan": "^0.12.25",
-        "symfony/error-handler": "^4.4 || ^5.1"
+        "symfony/error-handler": "^4.4"
     }
 }
