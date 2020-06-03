@@ -280,7 +280,7 @@ class Client
      *
      * @return Account|null
      */
-    public function getAccounts(string $sessionToken, ?string $bix, ?string $email)
+    public function getAccount(string $sessionToken, ?string $bix, ?string $email)
     {
         if (null !== $bix) {
             $response = $this->doGetInfoClient($sessionToken, $bix);

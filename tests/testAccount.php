@@ -23,7 +23,7 @@ try {
     );
     $sessionToken = $client->getSessionToken();
 
-    dump($client->getAccounts($sessionToken, null, $argv[1]));
+    dump($client->getAccount($sessionToken, null, $argv[1]));
 } catch (\GuzzleHttp\Exception\ClientException $exception) {
     echo $exception->getMessage() . PHP_EOL;
     echo $exception->getResponse()->getBody(). PHP_EOL;
