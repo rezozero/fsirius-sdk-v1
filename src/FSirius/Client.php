@@ -156,7 +156,7 @@ class Client
      *
      * @param string $url
      * @param array $options
-     * @return TextResponse
+     * @return TextResponse|JsonResponse
      */
     public function get($url, $options = [])
     {
@@ -271,6 +271,69 @@ class Client
         }
 
         return $eventDates;
+    }
+
+    /**
+     * @param string      $sessionToken
+     * @param string|null $bix
+     * @param string|null $email
+     *
+     * @return Account|null
+     */
+    public function getAccounts(string $sessionToken, ?string $bix, ?string $email)
+    {
+        if (null !== $bix) {
+            $response = $this->doGetInfoClient($sessionToken, $bix);
+            if ($response->isStatusOk()) {
+                return (new Account())->applyResponse($response);
+            }
+            return null;
+        } elseif (null !== $email && filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $response = $this->get('/TestCompte', [
+                'query' => [
+                    'instPA' => $sessionToken,
+                    'email' => $email,
+                ]
+            ]);
+            if ($response->isStatusOk()) {
+                /*
+                 * Multiple bix for one email is possible
+                 */
+                $bixGroup = $response->getParam('bix');
+                if (null !== $bixGroup && !empty($bixGroup)) {
+                    $bixGroup = explode(',', $bixGroup);
+                    $account = null;
+                    foreach ($bixGroup as $bix) {
+                        $response = $this->doGetInfoClient($sessionToken, $bix);
+                        if ($response->isStatusOk()) {
+                            if (null === $account) {
+                                $account = new Account();
+                            }
+                            $account->applyResponse($response);
+                        }
+                    }
+                    return $account;
+                }
+            }
+            return null;
+        }
+        throw new \InvalidArgumentException('You must provide a bix and a valid email');
+    }
+
+    /**
+     * @param string $sessionToken
+     * @param string $bix
+     *
+     * @return JsonResponse|TextResponse
+     */
+    protected function doGetInfoClient(string $sessionToken, string $bix)
+    {
+        return $this->get('/InfoClient', [
+            'query' => [
+                'instPA' => $sessionToken,
+                'bix' => $bix,
+            ]
+        ]);
     }
 
     /**

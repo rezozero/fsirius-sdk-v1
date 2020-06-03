@@ -45,4 +45,17 @@ abstract class AbstractResponse
     {
         return isset($this->params[$paramName]) ? $this->params[$paramName] : null;
     }
+
+    /**
+     * is utilized for reading data from inaccessible members.
+     *
+     * @param string $name
+     *
+     * @return mixed
+     * @link https://php.net/manual/en/language.oop5.overloading.php#language.oop5.overloading.members
+     */
+    public function __get($name)
+    {
+        return $this->getParam($name);
+    }
 }

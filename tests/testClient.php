@@ -9,10 +9,10 @@ ini_set('date.timezone', 'Europe/Paris');
 try {
     Symfony\Component\ErrorHandler\Debug::enable();
     if (!isset($argv[1])) {
-        throw new InvalidArgumentException('You must specify an event ID');
+        throw new InvalidArgumentException('You must specify an email');
     }
 
-    $eventId = $argv[1];
+    $email = $argv[1];
     // Theses credentials are only available in API dev mode.
     $client = new \RZ\FSirius\Client(
         $api_auth['url'],
@@ -21,11 +21,9 @@ try {
         \RZ\FSirius\JsonResponse::class,
         $api_auth['proxy']
     );
-    $client->setEventId($eventId);
     $sessionToken = $client->getSessionToken();
 
-    dump($client->getEventDates($sessionToken, $eventId));
-    dump($client->getEventDateAvailability($sessionToken, $eventId));
+    dump($client->getAccounts($sessionToken, null, $argv[1]));
 } catch (\GuzzleHttp\Exception\ClientException $exception) {
     echo $exception->getMessage() . PHP_EOL;
     echo $exception->getResponse()->getBody(). PHP_EOL;
