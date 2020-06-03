@@ -1,0 +1,9 @@
+parameters:
+    excludes_analyse:
+        - */node_modules/*
+        - */bower_components/*
+        - */static/*
+    ignoreErrors:
+        - '#call_user_func expects callable\(\)#'
+    reportUnmatchedIgnoredErrors: false
+    checkMissingIterableValueType: false

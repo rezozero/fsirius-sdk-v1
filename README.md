@@ -1,5 +1,5 @@
 # Forum Sirius APIv1 PHP SDK
-**Use Guzzle 5**
+**Use Guzzle 6**
 
 Available methods:
 

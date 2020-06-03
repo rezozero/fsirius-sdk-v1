@@ -38,7 +38,7 @@ abstract class AbstractResponse
     }
 
     /**
-     * @param $paramName
+     * @param string $paramName
      * @return array|mixed|null
      */
     public function getParam($paramName)

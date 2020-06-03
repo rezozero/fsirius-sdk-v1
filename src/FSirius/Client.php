@@ -26,7 +26,7 @@ class Client
     protected $guzzleClient;
 
     /**
-     * @var CacheProvider
+     * @var CacheProvider|null
      */
     private $cacheProvider;
 
@@ -177,7 +177,7 @@ class Client
      * Get valid season items.
      *
      * @param array $options
-     * @return string
+     * @return string|null
      */
     public function getSessionToken($options = [])
     {
@@ -298,7 +298,7 @@ class Client
             }
 
             $mediumDispo /= count($availabilities);
-            return $numericDispoKeys[(int) floor($mediumDispo)];
+            return (string) $numericDispoKeys[(int) floor($mediumDispo)];
         }
 
         return static::NO_MORE_SEATS;
