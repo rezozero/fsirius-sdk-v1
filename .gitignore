@@ -65,6 +65,7 @@ fabric.properties
 # See https://github.com/joeblau/gitignore.io/issues/186 and https://github.com/joeblau/gitignore.io/issues/360
 
 .idea/
+.phpcs-cache
 
 # End of https://www.gitignore.io/api/composer,phpstorm+all
 /tests/api_auth.php
