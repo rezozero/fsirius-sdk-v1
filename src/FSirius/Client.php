@@ -46,8 +46,6 @@ class Client
     private $responseType = JsonResponse::class;
 
     /**
-     * Client constructor.
-     *
      * @param string $endpoint
      * @param string $clientId
      * @param CacheProvider|null $cacheProvider
@@ -73,7 +71,8 @@ class Client
                 'Accept' => call_user_func([$this->responseType, 'getContentType']),
                 'X-Origin' => 'RZ-FSirius-SDK',
             ],
-            'timeout' => 3,
+            'timeout' => 4,
+            'connect_timeout' => 2,
             'allow_redirects' => [
                 'max'       => 3,       // allow at most 10 redirects.
                 'strict'    => true,     // use "strict" RFC compliant redirects.
@@ -252,21 +251,31 @@ class Client
         $eventDateIds = explode(',', $eventDatesResponse->getParam('listeSC'));
         $eventCategories = explode(',', $eventDatesResponse->getParam('listeCat'));
         $eventCategoriesCount = count($eventCategories);
+
+        /*
+         * Default info is unavailable
+         */
+        foreach ($eventDateIds as $i => $eventDateId) {
+            $eventDates[$eventDateId] = Client::UNAVAILABLE_INFO;
+        }
         /*
          * dispoVOR is used for each SC AND Cat
          */
-        $eventDateAvailability = str_split($eventDatesResponse->getParam('dispoVOR'));
+        $dispoVOR = $eventDatesResponse->getParam('dispoVOR');
+        if (strlen($dispoVOR) > 0) {
+            $eventDateAvailability = str_split($dispoVOR);
 
-        if (count($eventDateAvailability) > 0) {
-            foreach ($eventDateIds as $i => $eventDateId) {
-                $eventAvailabilities = [];
-                foreach ($eventCategories as $j => $eventCategory) {
-                    $index = ($i*$eventCategoriesCount)+$j;
-                    if (isset($eventDateAvailability[$index])) {
-                        $eventAvailabilities[] = $eventDateAvailability[$index];
+            if (count($eventDateAvailability) > 0) {
+                foreach ($eventDateIds as $i => $eventDateId) {
+                    $eventAvailabilities = [];
+                    foreach ($eventCategories as $j => $eventCategory) {
+                        $index = ($i*$eventCategoriesCount)+$j;
+                        if (isset($eventDateAvailability[$index])) {
+                            $eventAvailabilities[] = $eventDateAvailability[$index];
+                        }
                     }
+                    $eventDates[$eventDateId] = $this->getBestAvailabilities($eventAvailabilities);
                 }
-                $eventDates[$eventDateId] = $this->getBestAvailabilities($eventAvailabilities);
             }
         }
 

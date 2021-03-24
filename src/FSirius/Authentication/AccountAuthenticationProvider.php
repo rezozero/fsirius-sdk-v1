@@ -28,8 +28,6 @@ class AccountAuthenticationProvider implements AuthenticationProviderInterface
     protected $hideUserNotFoundExceptions;
 
     /**
-     * AccountAuthenticationProvider constructor.
-     *
      * @param AccountProvider $accountProvider
      * @param string          $providerKey
      * @param bool            $hideUserNotFoundExceptions

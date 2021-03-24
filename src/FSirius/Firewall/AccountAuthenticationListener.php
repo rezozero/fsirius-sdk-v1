@@ -22,8 +22,6 @@ use Symfony\Component\Security\Http\Session\SessionAuthenticationStrategyInterfa
 class AccountAuthenticationListener extends AbstractAuthenticationListener
 {
     /**
-     * AccountAuthenticationListener constructor.
-     *
      * @param TokenStorageInterface                  $tokenStorage
      * @param AuthenticationManagerInterface         $authenticationManager
      * @param SessionAuthenticationStrategyInterface $sessionStrategy

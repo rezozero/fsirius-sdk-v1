@@ -14,8 +14,6 @@ class AccountToken extends AbstractToken
     protected $providerKey;
 
     /**
-     * AccountToken constructor.
-     *
      * @param string|UserInterface $user
      * @param string               $providerKey
      * @param array                $roles

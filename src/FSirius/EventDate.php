@@ -3,8 +3,6 @@
 namespace RZ\FSirius;
 
 /**
- * Class EventDate.
- *
  * @package RZ\FSirius
  */
 class EventDate

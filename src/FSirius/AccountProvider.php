@@ -16,8 +16,6 @@ class AccountProvider implements UserProviderInterface
     private $client;
 
     /**
-     * AccountProvider constructor.
-     *
      * @param Client $client
      */
     public function __construct(Client $client)

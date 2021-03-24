@@ -25,7 +25,6 @@ class TextResponse extends AbstractResponse
     private $body;
 
     /**
-     * JsonResponse constructor.
      * @param ResponseInterface $response
      */
     public function __construct(ResponseInterface $response)
