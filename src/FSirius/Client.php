@@ -256,21 +256,31 @@ class Client
         $eventDateIds = explode(',', $eventDatesResponse->getParam('listeSC'));
         $eventCategories = explode(',', $eventDatesResponse->getParam('listeCat'));
         $eventCategoriesCount = count($eventCategories);
+
+        /*
+         * Default info is unavailable
+         */
+        foreach ($eventDateIds as $i => $eventDateId) {
+            $eventDates[$eventDateId] = Client::UNAVAILABLE_INFO;
+        }
         /*
          * dispoVOR is used for each SC AND Cat
          */
-        $eventDateAvailability = str_split($eventDatesResponse->getParam('dispoVOR'));
+        $dispoVOR = $eventDatesResponse->getParam('dispoVOR');
+        if (strlen($dispoVOR) > 0) {
+            $eventDateAvailability = str_split($dispoVOR);
 
-        if (count($eventDateAvailability) > 0) {
-            foreach ($eventDateIds as $i => $eventDateId) {
-                $eventAvailabilities = [];
-                foreach ($eventCategories as $j => $eventCategory) {
-                    $index = ($i*$eventCategoriesCount)+$j;
-                    if (isset($eventDateAvailability[$index])) {
-                        $eventAvailabilities[] = $eventDateAvailability[$index];
+            if (count($eventDateAvailability) > 0) {
+                foreach ($eventDateIds as $i => $eventDateId) {
+                    $eventAvailabilities = [];
+                    foreach ($eventCategories as $j => $eventCategory) {
+                        $index = ($i*$eventCategoriesCount)+$j;
+                        if (isset($eventDateAvailability[$index])) {
+                            $eventAvailabilities[] = $eventDateAvailability[$index];
+                        }
                     }
+                    $eventDates[$eventDateId] = $this->getBestAvailabilities($eventAvailabilities);
                 }
-                $eventDates[$eventDateId] = $this->getBestAvailabilities($eventAvailabilities);
             }
         }
 
