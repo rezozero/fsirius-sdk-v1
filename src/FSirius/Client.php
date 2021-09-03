@@ -265,17 +265,15 @@ class Client
         if (strlen($dispoVOR) > 0) {
             $eventDateAvailability = str_split($dispoVOR);
 
-            if (count($eventDateAvailability) > 0) {
-                foreach ($eventDateIds as $i => $eventDateId) {
-                    $eventAvailabilities = [];
-                    foreach ($eventCategories as $j => $eventCategory) {
-                        $index = ($i*$eventCategoriesCount)+$j;
-                        if (isset($eventDateAvailability[$index])) {
-                            $eventAvailabilities[] = $eventDateAvailability[$index];
-                        }
+            foreach ($eventDateIds as $i => $eventDateId) {
+                $eventAvailabilities = [];
+                foreach ($eventCategories as $j => $eventCategory) {
+                    $index = ($i*$eventCategoriesCount)+$j;
+                    if (isset($eventDateAvailability[$index])) {
+                        $eventAvailabilities[] = $eventDateAvailability[$index];
                     }
-                    $eventDates[$eventDateId] = $this->getBestAvailabilities($eventAvailabilities);
                 }
+                $eventDates[$eventDateId] = $this->getBestAvailabilities($eventAvailabilities);
             }
         }
 

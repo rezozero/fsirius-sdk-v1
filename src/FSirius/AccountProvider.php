@@ -25,6 +25,7 @@ class AccountProvider implements UserProviderInterface
 
     /**
      * @inheritDoc
+     * @param string $username
      */
     public function loadUserByUsername($username)
     {
@@ -56,6 +57,7 @@ class AccountProvider implements UserProviderInterface
 
     /**
      * @inheritDoc
+     * @param class-string $class
      */
     public function supportsClass($class)
     {
