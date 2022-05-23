@@ -186,7 +186,7 @@ class Client
         return $this->get('/Contexte', [
             'query' => [
                 'inst' => $this->clientId,
-                'session' => static::SESSION_ID,
+                'session' => $this->clientId . '_' . static::SESSION_ID,
                 'paramsURL' => $compiledOptions,
             ]
         ])->getSessionToken();

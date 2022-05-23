@@ -13,7 +13,7 @@ try {
     }
 
     $eventId = $argv[1];
-    // Theses credentials are only available in API dev mode.
+    // These credentials are only available in API dev mode.
     $client = new \RZ\FSirius\Client(
         $api_auth['url'],
         $api_auth['clientId'],
