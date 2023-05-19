@@ -291,7 +291,7 @@ class Client
                  * Multiple bix for one email is possible
                  */
                 $bixGroup = $response->getParam('bix');
-                if (null !== $bixGroup && !empty($bixGroup)) {
+                if (is_string($bixGroup)) {
                     $bixGroup = explode(',', $bixGroup);
                     $account = null;
                     foreach ($bixGroup as $bix) {
