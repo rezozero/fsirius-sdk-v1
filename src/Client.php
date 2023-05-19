@@ -1,69 +1,47 @@
 <?php
+
 namespace RZ\FSirius;
 
 use Doctrine\Common\Cache\CacheProvider;
+use GuzzleHttp\Exception\GuzzleException;
 
 class Client
 {
-    const SESSION_ID = 'fsirius_sdk_session';
-    const CACHE_KEY_DOMAIN = 'fsirius_sdk_token';
-    const CACHE_TTL = 120;
+    public const SESSION_ID = 'fsirius_sdk_session';
+    public const CACHE_KEY_DOMAIN = 'fsirius_sdk_token';
+    public const AVAILABLE_SEATS = 'V';
+    public const LATEST_SEATS = 'O';
+    public const NO_MORE_SEATS = 'R';
+    public const FORBIDDEN_EVENT_DATE = '-';
+    public const UNAVAILABLE_INFO = '?';
 
-    const AVAILABLE_SEATS = 'V';
-    const LATEST_SEATS = 'O';
-    const NO_MORE_SEATS = 'R';
-    const FORBIDDEN_EVENT_DATE = '-';
-    const UNAVAILABLE_INFO = '?';
-
+    protected \GuzzleHttp\Client $guzzleClient;
+    private ?CacheProvider $cacheProvider = null;
+    private string $clientId;
+    private ?string $eventId = null;
     /**
-     * @var string
+     * @var class-string<AbstractResponse>
      */
-    private $endpoint;
-
-    /**
-     * @var \GuzzleHttp\Client
-     */
-    protected $guzzleClient;
-
-    /**
-     * @var CacheProvider|null
-     */
-    private $cacheProvider;
-
-    /**
-     * @var string
-     */
-    private $clientId;
-
-    /**
-     * @var string
-     */
-    private $eventId;
-
-    /**
-     * @var string
-     */
-    private $responseType = JsonResponse::class;
+    private string $responseType = JsonResponse::class;
 
     /**
      * @param string $endpoint
      * @param string $clientId
      * @param CacheProvider|null $cacheProvider
-     * @param string $responseType
+     * @param class-string<AbstractResponse> $responseType
      * @param string|null $proxy
      */
     public function __construct(
         string $endpoint,
         string $clientId,
         CacheProvider $cacheProvider = null,
-        $responseType = JsonResponse::class,
+        string $responseType = JsonResponse::class,
         string $proxy = null
     ) {
         if (!filter_var($endpoint, FILTER_VALIDATE_URL)) {
             throw new \InvalidArgumentException('Endpoint ' . $endpoint . ' must be a valid URL');
         }
 
-        $this->endpoint = $endpoint;
         $this->responseType = $responseType;
         $config = [
             'base_uri' => $endpoint,
@@ -90,7 +68,7 @@ class Client
     }
 
     /**
-     * @return string
+     * @return class-string<AbstractResponse>
      */
     public function getResponseType(): string
     {
@@ -100,7 +78,7 @@ class Client
     /**
      * @return $this
      */
-    public function setTextResponseType()
+    public function setTextResponseType(): Client
     {
         $this->responseType = TextResponse::class;
         return $this;
@@ -109,7 +87,7 @@ class Client
     /**
      * @return $this
      */
-    public function setJsonResponseType()
+    public function setJsonResponseType(): Client
     {
         $this->responseType = JsonResponse::class;
         return $this;
@@ -119,7 +97,7 @@ class Client
     /**
      * @return CacheProvider|null
      */
-    public function getCacheProvider()
+    public function getCacheProvider(): ?CacheProvider
     {
         return $this->cacheProvider;
     }
@@ -137,7 +115,7 @@ class Client
     /**
      * @return string
      */
-    public function getCacheKey()
+    public function getCacheKey(): string
     {
         return sha1(static::CACHE_KEY_DOMAIN . $this->eventId . $this->clientId);
     }
@@ -145,7 +123,7 @@ class Client
     /**
      * @return \GuzzleHttp\Client
      */
-    public function getGuzzleClient()
+    public function getGuzzleClient(): \GuzzleHttp\Client
     {
         return $this->guzzleClient;
     }
@@ -155,9 +133,10 @@ class Client
      *
      * @param string $url
      * @param array $options
-     * @return TextResponse|JsonResponse
+     * @return AbstractResponse
+     * @throws GuzzleException
      */
-    public function get($url, $options = [])
+    public function get(string $url, array $options = []): AbstractResponse
     {
         $responseType = $this->getResponseType();
         return new $responseType($this->getGuzzleClient()->get($url, $options));
@@ -167,9 +146,9 @@ class Client
      * @param string $eventId
      * @return string
      */
-    protected function getEventQuery($eventId)
+    protected function getEventQuery(string $eventId): string
     {
-        return 'spec='.$eventId;
+        return 'spec=' . $eventId;
     }
 
     /**
@@ -177,8 +156,9 @@ class Client
      *
      * @param array $options
      * @return string|null
+     * @throws GuzzleException
      */
-    public function getSessionToken($options = [])
+    public function getSessionToken(array $options = []): ?string
     {
         $options['spec'] = $this->getEventId();
         $compiledOptions = http_build_query($options);
@@ -196,8 +176,9 @@ class Client
      * @param string $sessionToken
      * @param string $eventId
      * @return array
+     * @throws GuzzleException
      */
-    public function getEventDateIds($sessionToken, $eventId)
+    public function getEventDateIds(string $sessionToken, string $eventId): array
     {
         $eventDateIds = $this->get('/ListeSC', [
             'query' => [
@@ -213,8 +194,9 @@ class Client
      * @param string $sessionToken
      * @param string $eventId
      * @return array
+     * @throws GuzzleException
      */
-    public function getEventDateParams($sessionToken, $eventId)
+    public function getEventDateParams(string $sessionToken, string $eventId): array
     {
         $infosSC = $this->get('/ParamSC', [
             'query' => [
@@ -234,8 +216,9 @@ class Client
      * @param string $sessionToken
      * @param string $eventId
      * @return array
+     * @throws GuzzleException
      */
-    public function getEventDateAvailability($sessionToken, $eventId)
+    public function getEventDateAvailability(string $sessionToken, string $eventId): array
     {
         $eventDatesResponse = $this->get('/DispoListeSC', [
             'query' => [
@@ -268,7 +251,7 @@ class Client
             foreach ($eventDateIds as $i => $eventDateId) {
                 $eventAvailabilities = [];
                 foreach ($eventCategories as $j => $eventCategory) {
-                    $index = ($i*$eventCategoriesCount)+$j;
+                    $index = ($i * $eventCategoriesCount) + $j;
                     if (isset($eventDateAvailability[$index])) {
                         $eventAvailabilities[] = $eventDateAvailability[$index];
                     }
@@ -281,13 +264,14 @@ class Client
     }
 
     /**
-     * @param string      $sessionToken
+     * @param string $sessionToken
      * @param string|null $bix
      * @param string|null $email
      *
      * @return Account|null
+     * @throws GuzzleException
      */
-    public function getAccount(string $sessionToken, ?string $bix, ?string $email)
+    public function getAccount(string $sessionToken, ?string $bix, ?string $email): ?Account
     {
         if (null !== $bix) {
             $response = $this->doGetInfoClient($sessionToken, $bix);
@@ -331,9 +315,10 @@ class Client
      * @param string $sessionToken
      * @param string $bix
      *
-     * @return JsonResponse|TextResponse
+     * @return AbstractResponse
+     * @throws GuzzleException
      */
-    protected function doGetInfoClient(string $sessionToken, string $bix)
+    protected function doGetInfoClient(string $sessionToken, string $bix): AbstractResponse
     {
         return $this->get('/InfoClient', [
             'query' => [
@@ -349,7 +334,7 @@ class Client
      * @param array $availabilities
      * @return string
      */
-    protected function getMediumAvailabilities(array $availabilities = [])
+    protected function getMediumAvailabilities(array $availabilities = []): string
     {
         if (count($availabilities) > 0) {
             $numericDispo = [
@@ -380,7 +365,7 @@ class Client
      * @param array $availabilities
      * @return string
      */
-    protected function getBestAvailabilities(array $availabilities = [])
+    protected function getBestAvailabilities(array $availabilities = []): string
     {
         if (count($availabilities) > 0) {
             if (in_array(static::AVAILABLE_SEATS, $availabilities)) {
@@ -400,9 +385,10 @@ class Client
      * @param string $eventId
      *
      * @return EventDate[]
+     * @throws GuzzleException
      * @throws \Exception
      */
-    public function getEventDates($sessionToken, $eventId)
+    public function getEventDates(string $sessionToken, string $eventId): array
     {
         $eventDates = [];
         $eventDatesArray = $this->getEventDateParams($sessionToken, $eventId);
@@ -422,19 +408,16 @@ class Client
         return $eventDates;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getEventId()
+    public function getEventId(): ?string
     {
         return $this->eventId;
     }
 
     /**
-     * @param mixed $eventId
+     * @param string|null $eventId
      * @return Client
      */
-    public function setEventId($eventId)
+    public function setEventId(?string $eventId): Client
     {
         $this->eventId = $eventId;
         return $this;

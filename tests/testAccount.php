@@ -14,14 +14,14 @@ try {
 
     $email = $argv[1];
     // Theses credentials are only available in API dev mode.
-    $client = new \RZ\FSirius\Client(
+    $client = new RZ\FSirius\Client(
         $api_auth['url'],
         $api_auth['clientId'],
         null,
-        \RZ\FSirius\JsonResponse::class,
+        RZ\JsonResponse::class,
         $api_auth['proxy']
     );
-    $accountProvider = new \RZ\FSirius\AccountProvider($client);
+    $accountProvider = new RZ\AccountProvider($client);
     dump($accountProvider->loadUserByUsername($argv[1]));
 } catch (\GuzzleHttp\Exception\ClientException $exception) {
     echo $exception->getMessage() . PHP_EOL;

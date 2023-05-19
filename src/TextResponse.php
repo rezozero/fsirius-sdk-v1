@@ -6,6 +6,10 @@ use Psr\Http\Message\ResponseInterface;
 
 class TextResponse extends AbstractResponse
 {
+    private ResponseInterface $response;
+
+    private string $body;
+
     /**
      * @return string
      */
@@ -15,21 +19,19 @@ class TextResponse extends AbstractResponse
     }
 
     /**
-     * @var ResponseInterface
+     * @return ResponseInterface
      */
-    private $response;
-
-    /**
-     * @var string
-     */
-    private $body;
+    public function getResponse(): ResponseInterface
+    {
+        return $this->response;
+    }
 
     /**
      * @param ResponseInterface $response
      */
     public function __construct(ResponseInterface $response)
     {
-        $this->body = $response->getBody();
+        $this->body = $response->getBody()->getContents();
         $this->response = $response;
 
         parse_str($this->body, $this->params);

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace RZ\FSirius;
@@ -7,61 +8,22 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 final class Account implements UserInterface
 {
-    const BASE_ROLE = 'ROLE_FORUMSIRIUS_USER';
-    const PRO_ROLE = 'ROLE_FORUMSIRIUS_PRO_USER';
+    public const BASE_ROLE = 'ROLE_FORUMSIRIUS_USER';
+    public const PRO_ROLE = 'ROLE_FORUMSIRIUS_PRO_USER';
 
-    /**
-     * @var string|null
-     */
-    private $title;
-    /**
-     * @var string|null
-     */
-    private $lastName;
-    /**
-     * @var string|null
-     */
-    private $firstName;
-    /**
-     * @var string|null
-     */
-    private $quality;
-    /**
-     * @var string|null
-     */
-    private $company;
-    /**
-     * @var string|null
-     */
-    private $address;
-    /**
-     * @var string|null
-     */
-    private $zipCode;
-    /**
-     * @var string|null
-     */
-    private $city;
-    /**
-     * @var string|null
-     */
-    private $country;
-    /**
-     * @var string|null
-     */
-    private $phone;
-    /**
-     * @var string|null
-     */
-    private $altPhone;
-    /**
-     * @var string|null
-     */
-    private $email;
-    /**
-     * @var string|null
-     */
-    private $survey;
+    private ?string $title = null;
+    private ?string $lastName = null;
+    private ?string $firstName = null;
+    private ?string $quality = null;
+    private ?string $company = null;
+    private ?string $address = null;
+    private ?string $zipCode = null;
+    private ?string $city = null;
+    private ?string $country = null;
+    private ?string $phone = null;
+    private ?string $altPhone = null;
+    private ?string $email = null;
+    private ?string $survey = null;
 
     /**
      * @return string|null
@@ -328,7 +290,7 @@ final class Account implements UserInterface
      *
      * @return $this
      */
-    public function applyResponse(AbstractResponse $response): self
+    public function applyResponse(AbstractResponse $response): Account
     {
         if (!$response->isStatusOk()) {
             throw new \InvalidArgumentException('Source response is not valid.');
@@ -379,17 +341,17 @@ final class Account implements UserInterface
     /**
      * @inheritDoc
      */
-    public function getRoles()
+    public function getRoles(): array
     {
         return [
-            static::BASE_ROLE
+            self::BASE_ROLE
         ];
     }
 
     /**
      * @inheritDoc
      */
-    public function getPassword()
+    public function getPassword(): ?string
     {
         return null;
     }
@@ -397,7 +359,7 @@ final class Account implements UserInterface
     /**
      * @inheritDoc
      */
-    public function getSalt()
+    public function getSalt(): ?string
     {
         return null;
     }
@@ -405,7 +367,7 @@ final class Account implements UserInterface
     /**
      * @inheritDoc
      */
-    public function getUsername()
+    public function getUsername(): string
     {
         if (null === $this->getEmail()) {
             throw new \RuntimeException('Account username cannot null');
@@ -417,7 +379,7 @@ final class Account implements UserInterface
      * @inheritDoc
      * @return void
      */
-    public function eraseCredentials()
+    public function eraseCredentials(): void
     {
         // do nothing, there are no credentials in Sirius account
     }

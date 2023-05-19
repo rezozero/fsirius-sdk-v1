@@ -14,11 +14,11 @@ try {
 
     $eventId = $argv[1];
     // These credentials are only available in API dev mode.
-    $client = new \RZ\FSirius\Client(
+    $client = new RZ\FSirius\Client(
         $api_auth['url'],
         $api_auth['clientId'],
         null,
-        \RZ\FSirius\JsonResponse::class,
+        RZ\JsonResponse::class,
         $api_auth['proxy']
     );
     $client->setEventId($eventId);
