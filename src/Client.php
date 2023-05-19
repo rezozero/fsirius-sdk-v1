@@ -205,7 +205,7 @@ class Client
             ]
         ])->getParam('infosSC');
 
-        if (isset($infosSC['apiParamSC'])) {
+        if (is_array($infosSC) && isset($infosSC['apiParamSC'])) {
             return $infosSC['apiParamSC'];
         }
 
