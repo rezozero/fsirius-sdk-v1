@@ -383,4 +383,9 @@ final class Account implements UserInterface
     {
         // do nothing, there are no credentials in Sirius account
     }
+
+    public function getUserIdentifier(): string
+    {
+        return $this->getUsername();
+    }
 }
