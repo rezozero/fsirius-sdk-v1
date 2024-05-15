@@ -7,6 +7,7 @@ parameters:
         - */bower_components/*
         - */static/*
     ignoreErrors:
+        - identifier: missingType.iterableValue
+        - identifier: missingType.generics
         - '#call_user_func expects callable\(\)#'
     reportUnmatchedIgnoredErrors: false
-    checkMissingIterableValueType: false
