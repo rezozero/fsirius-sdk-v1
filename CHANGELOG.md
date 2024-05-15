@@ -2,7 +2,7 @@
 
 All notable changes to project will be documented in this file.
 
-## [unreleased]
+## [3.0.0](https://github.com/rezozero/fsirius-sdk-v1/compare/2.0.0...3.0.0) - 2024-05-15
 
 ### Features
 
