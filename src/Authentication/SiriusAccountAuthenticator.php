@@ -26,7 +26,7 @@ abstract class SiriusAccountAuthenticator extends AbstractAuthenticator
     public function __construct(
         private readonly AccountProvider $accountProvider,
         private readonly CredentialsInterface $credentials,
-        private readonly string $usernamePath = 'username'
+        private readonly string $usernamePath = 'username',
     ) {
     }
 

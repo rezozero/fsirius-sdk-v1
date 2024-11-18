@@ -22,7 +22,6 @@
         "symfony/security-http": "6.4.*"
     },
     "require-dev": {
-        "squizlabs/php_codesniffer": "^3.3",
         "phpstan/phpstan": "~1.11.8",
         "symfony/error-handler": "6.4.*"
     },

@@ -14,19 +14,11 @@ class AccountProvider implements UserProviderInterface
 {
     private Client $client;
 
-    /**
-     * @param Client $client
-     */
     public function __construct(Client $client)
     {
         $this->client = $client;
     }
 
-    /**
-     * @inheritDoc
-     * @param string $identifier
-     * @return Account
-     */
     public function loadUserByIdentifier(string $identifier): Account
     {
         try {
@@ -48,9 +40,6 @@ class AccountProvider implements UserProviderInterface
         return $this->loadUserByIdentifier($username);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function refreshUser(UserInterface $user): Account
     {
         try {
@@ -69,11 +58,10 @@ class AccountProvider implements UserProviderInterface
     }
 
     /**
-     * @inheritDoc
      * @param class-string $class
      */
     public function supportsClass(string $class): bool
     {
-        return $class === Account::class;
+        return Account::class === $class;
     }
 }

@@ -25,19 +25,11 @@ final class Account implements UserInterface
     private ?string $email = null;
     private ?string $survey = null;
 
-    /**
-     * @return string|null
-     */
     public function getTitle(): ?string
     {
         return $this->title;
     }
 
-    /**
-     * @param string|null $title
-     *
-     * @return Account
-     */
     public function setTitle(?string $title): Account
     {
         $this->title = $title;
@@ -45,19 +37,11 @@ final class Account implements UserInterface
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getLastName(): ?string
     {
         return $this->lastName;
     }
 
-    /**
-     * @param string|null $lastName
-     *
-     * @return Account
-     */
     public function setLastName(?string $lastName): Account
     {
         $this->lastName = $lastName;
@@ -65,19 +49,11 @@ final class Account implements UserInterface
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getFirstName(): ?string
     {
         return $this->firstName;
     }
 
-    /**
-     * @param string|null $firstName
-     *
-     * @return Account
-     */
     public function setFirstName(?string $firstName): Account
     {
         $this->firstName = $firstName;
@@ -85,19 +61,11 @@ final class Account implements UserInterface
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getQuality(): ?string
     {
         return $this->quality;
     }
 
-    /**
-     * @param string|null $quality
-     *
-     * @return Account
-     */
     public function setQuality(?string $quality): Account
     {
         $this->quality = $quality;
@@ -105,19 +73,11 @@ final class Account implements UserInterface
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getCompany(): ?string
     {
         return $this->company;
     }
 
-    /**
-     * @param string|null $company
-     *
-     * @return Account
-     */
     public function setCompany(?string $company): Account
     {
         $this->company = $company;
@@ -125,19 +85,11 @@ final class Account implements UserInterface
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getAddress(): ?string
     {
         return $this->address;
     }
 
-    /**
-     * @param string|null $address
-     *
-     * @return Account
-     */
     public function setAddress(?string $address): Account
     {
         $this->address = $address;
@@ -145,19 +97,11 @@ final class Account implements UserInterface
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getZipCode(): ?string
     {
         return $this->zipCode;
     }
 
-    /**
-     * @param string|null $zipCode
-     *
-     * @return Account
-     */
     public function setZipCode(?string $zipCode): Account
     {
         $this->zipCode = $zipCode;
@@ -165,19 +109,11 @@ final class Account implements UserInterface
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getCity(): ?string
     {
         return $this->city;
     }
 
-    /**
-     * @param string|null $city
-     *
-     * @return Account
-     */
     public function setCity(?string $city): Account
     {
         $this->city = $city;
@@ -185,19 +121,11 @@ final class Account implements UserInterface
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getCountry(): ?string
     {
         return $this->country;
     }
 
-    /**
-     * @param string|null $country
-     *
-     * @return Account
-     */
     public function setCountry(?string $country): Account
     {
         $this->country = $country;
@@ -205,19 +133,11 @@ final class Account implements UserInterface
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getPhone(): ?string
     {
         return $this->phone;
     }
 
-    /**
-     * @param string|null $phone
-     *
-     * @return Account
-     */
     public function setPhone(?string $phone): Account
     {
         $this->phone = $phone;
@@ -225,19 +145,11 @@ final class Account implements UserInterface
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getAltPhone(): ?string
     {
         return $this->altPhone;
     }
 
-    /**
-     * @param string|null $altPhone
-     *
-     * @return Account
-     */
     public function setAltPhone(?string $altPhone): Account
     {
         $this->altPhone = $altPhone;
@@ -245,19 +157,11 @@ final class Account implements UserInterface
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getEmail(): ?string
     {
         return $this->email;
     }
 
-    /**
-     * @param string|null $email
-     *
-     * @return Account
-     */
     public function setEmail(?string $email): Account
     {
         $this->email = $email;
@@ -265,19 +169,11 @@ final class Account implements UserInterface
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getSurvey(): ?string
     {
         return $this->survey;
     }
 
-    /**
-     * @param string|null $survey
-     *
-     * @return Account
-     */
     public function setSurvey(?string $survey): Account
     {
         $this->survey = $survey;
@@ -286,8 +182,6 @@ final class Account implements UserInterface
     }
 
     /**
-     * @param AbstractResponse $response
-     *
      * @return $this
      */
     public function applyResponse(AbstractResponse $response): Account
@@ -338,47 +232,32 @@ final class Account implements UserInterface
         return $this;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getRoles(): array
     {
         return [
-            self::BASE_ROLE
+            self::BASE_ROLE,
         ];
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getPassword(): ?string
     {
         return null;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getSalt(): ?string
     {
         return null;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getUsername(): string
     {
         if (null === $this->getEmail()) {
             throw new \RuntimeException('Account username cannot null');
         }
+
         return $this->getEmail();
     }
 
-    /**
-     * @inheritDoc
-     * @return void
-     */
     public function eraseCredentials(): void
     {
         // do nothing, there are no credentials in Sirius account

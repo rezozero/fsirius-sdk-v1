@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace RZ\FSirius;
 
 use Doctrine\Common\Cache\CacheProvider;
@@ -25,21 +27,17 @@ class Client
     private string $responseType = JsonResponse::class;
 
     /**
-     * @param string $endpoint
-     * @param string $clientId
-     * @param CacheProvider|null $cacheProvider
      * @param class-string<AbstractResponse> $responseType
-     * @param string|null $proxy
      */
     public function __construct(
         string $endpoint,
         string $clientId,
-        CacheProvider $cacheProvider = null,
+        ?CacheProvider $cacheProvider = null,
         string $responseType = JsonResponse::class,
-        string $proxy = null
+        ?string $proxy = null,
     ) {
         if (!filter_var($endpoint, FILTER_VALIDATE_URL)) {
-            throw new \InvalidArgumentException('Endpoint ' . $endpoint . ' must be a valid URL');
+            throw new \InvalidArgumentException('Endpoint '.$endpoint.' must be a valid URL');
         }
 
         $this->responseType = $responseType;
@@ -52,13 +50,13 @@ class Client
             'timeout' => 4,
             'connect_timeout' => 2,
             'allow_redirects' => [
-                'max'       => 3,       // allow at most 10 redirects.
-                'strict'    => true,     // use "strict" RFC compliant redirects.
-                'referer'   => true,     // add a Referer header
-                'protocols' => ['http', 'https'] // only allow https URLs
-            ]
+                'max' => 3,       // allow at most 10 redirects.
+                'strict' => true,     // use "strict" RFC compliant redirects.
+                'referer' => true,     // add a Referer header
+                'protocols' => ['http', 'https'], // only allow https URLs
+            ],
         ];
-        if ($proxy !== null) {
+        if (null !== $proxy) {
             $config['proxy'] = $proxy;
         }
 
@@ -81,6 +79,7 @@ class Client
     public function setTextResponseType(): Client
     {
         $this->responseType = TextResponse::class;
+
         return $this;
     }
 
@@ -90,39 +89,27 @@ class Client
     public function setJsonResponseType(): Client
     {
         $this->responseType = JsonResponse::class;
+
         return $this;
     }
 
-
-    /**
-     * @return CacheProvider|null
-     */
     public function getCacheProvider(): ?CacheProvider
     {
         return $this->cacheProvider;
     }
 
-    /**
-     * @param CacheProvider $cacheProvider
-     * @return Client
-     */
     public function setCacheProvider(CacheProvider $cacheProvider): Client
     {
         $this->cacheProvider = $cacheProvider;
+
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getCacheKey(): string
     {
-        return sha1(static::CACHE_KEY_DOMAIN . $this->eventId . $this->clientId);
+        return sha1(static::CACHE_KEY_DOMAIN.$this->eventId.$this->clientId);
     }
 
-    /**
-     * @return \GuzzleHttp\Client
-     */
     public function getGuzzleClient(): \GuzzleHttp\Client
     {
         return $this->guzzleClient;
@@ -131,31 +118,23 @@ class Client
     /**
      * GET request with no credentials.
      *
-     * @param string $url
-     * @param array $options
-     * @return AbstractResponse
      * @throws GuzzleException
      */
     public function get(string $url, array $options = []): AbstractResponse
     {
         $responseType = $this->getResponseType();
+
         return new $responseType($this->getGuzzleClient()->get($url, $options));
     }
 
-    /**
-     * @param string $eventId
-     * @return string
-     */
     protected function getEventQuery(string $eventId): string
     {
-        return 'spec=' . $eventId;
+        return 'spec='.$eventId;
     }
 
     /**
      * Get valid season items.
      *
-     * @param array $options
-     * @return string|null
      * @throws GuzzleException
      */
     public function getSessionToken(array $options = []): ?string
@@ -166,16 +145,13 @@ class Client
         return $this->get('/Contexte', [
             'query' => [
                 'inst' => $this->clientId,
-                'session' => $this->clientId . '_' . static::SESSION_ID,
+                'session' => $this->clientId.'_'.static::SESSION_ID,
                 'paramsURL' => $compiledOptions,
-            ]
+            ],
         ])->getSessionToken();
     }
 
     /**
-     * @param string $sessionToken
-     * @param string $eventId
-     * @return array
      * @throws GuzzleException
      */
     public function getEventDateIds(string $sessionToken, string $eventId): array
@@ -184,16 +160,13 @@ class Client
             'query' => [
                 'instPA' => $sessionToken,
                 'defSC' => $this->getEventQuery($eventId),
-            ]
+            ],
         ])->getParam('listeSC');
 
         return explode(',', $eventDateIds);
     }
 
     /**
-     * @param string $sessionToken
-     * @param string $eventId
-     * @return array
      * @throws GuzzleException
      */
     public function getEventDateParams(string $sessionToken, string $eventId): array
@@ -202,7 +175,7 @@ class Client
             'query' => [
                 'instPA' => $sessionToken,
                 'defSC' => $this->getEventQuery($eventId),
-            ]
+            ],
         ])->getParam('infosSC');
 
         if (is_array($infosSC) && isset($infosSC['apiParamSC'])) {
@@ -213,9 +186,6 @@ class Client
     }
 
     /**
-     * @param string $sessionToken
-     * @param string $eventId
-     * @return array
      * @throws GuzzleException
      */
     public function getEventDateAvailability(string $sessionToken, string $eventId): array
@@ -224,7 +194,7 @@ class Client
             'query' => [
                 'instPA' => $sessionToken,
                 'defSC' => $this->getEventQuery($eventId),
-            ]
+            ],
         ]);
 
         $eventDates = [];
@@ -264,11 +234,6 @@ class Client
     }
 
     /**
-     * @param string $sessionToken
-     * @param string|null $bix
-     * @param string|null $email
-     *
-     * @return Account|null
      * @throws GuzzleException
      */
     public function getAccount(string $sessionToken, ?string $bix, ?string $email): ?Account
@@ -278,13 +243,14 @@ class Client
             if ($response->isStatusOk()) {
                 return (new Account())->applyResponse($response);
             }
+
             return null;
         } elseif (null !== $email && filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $response = $this->get('/TestCompte', [
                 'query' => [
                     'instPA' => $sessionToken,
                     'email' => $email,
-                ]
+                ],
             ]);
             if ($response->isStatusOk()) {
                 /*
@@ -303,19 +269,17 @@ class Client
                             $account->applyResponse($response);
                         }
                     }
+
                     return $account;
                 }
             }
+
             return null;
         }
         throw new \InvalidArgumentException('You must provide a bix or a valid email');
     }
 
     /**
-     * @param string $sessionToken
-     * @param string $bix
-     *
-     * @return AbstractResponse
      * @throws GuzzleException
      */
     protected function doGetInfoClient(string $sessionToken, string $bix): AbstractResponse
@@ -324,15 +288,12 @@ class Client
             'query' => [
                 'instPA' => $sessionToken,
                 'bix' => $bix,
-            ]
+            ],
         ]);
     }
 
     /**
      * Process availabilities with medium calculus.
-     *
-     * @param array $availabilities
-     * @return string
      */
     protected function getMediumAvailabilities(array $availabilities = []): string
     {
@@ -353,6 +314,7 @@ class Client
             }
 
             $mediumDispo /= count($availabilities);
+
             return (string) $numericDispoKeys[(int) floor($mediumDispo)];
         }
 
@@ -361,9 +323,6 @@ class Client
 
     /**
      * Process availabilities with at least one of the best availability found.
-     *
-     * @param array $availabilities
-     * @return string
      */
     protected function getBestAvailabilities(array $availabilities = []): string
     {
@@ -374,6 +333,7 @@ class Client
             if (in_array(static::LATEST_SEATS, $availabilities)) {
                 return static::LATEST_SEATS;
             }
+
             return static::NO_MORE_SEATS;
         }
 
@@ -381,10 +341,8 @@ class Client
     }
 
     /**
-     * @param string $sessionToken
-     * @param string $eventId
-     *
      * @return EventDate[]
+     *
      * @throws GuzzleException
      * @throws \Exception
      */
@@ -399,7 +357,7 @@ class Client
             /*
              * Set event-date availability only if we got an availability for a given sessionId.
              */
-            if ("" !== $eventDate->getId() && isset($eventDatesAvailability[$eventDate->getId()])) {
+            if ('' !== $eventDate->getId() && isset($eventDatesAvailability[$eventDate->getId()])) {
                 $eventDate->setAvailability($eventDatesAvailability[$eventDate->getId()]);
             }
             $eventDates[] = $eventDate;
@@ -413,13 +371,10 @@ class Client
         return $this->eventId;
     }
 
-    /**
-     * @param string|null $eventId
-     * @return Client
-     */
     public function setEventId(?string $eventId): Client
     {
         $this->eventId = $eventId;
+
         return $this;
     }
 }

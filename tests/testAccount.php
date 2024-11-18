@@ -1,8 +1,10 @@
 <?php
 
-require(dirname(__FILE__) . "/../vendor/autoload.php");
+declare(strict_types=1);
 
-$api_auth = include dirname(__FILE__) . "/api_auth.php";
+require dirname(__FILE__).'/../vendor/autoload.php';
+
+$api_auth = include dirname(__FILE__).'/api_auth.php';
 
 ini_set('date.timezone', 'Europe/Paris');
 
@@ -23,8 +25,8 @@ try {
     );
     $accountProvider = new RZ\AccountProvider($client);
     dump($accountProvider->loadUserByUsername($argv[1]));
-} catch (\GuzzleHttp\Exception\ClientException $exception) {
-    echo $exception->getMessage() . PHP_EOL;
-    echo $exception->getResponse()->getBody(). PHP_EOL;
+} catch (GuzzleHttp\Exception\ClientException $exception) {
+    echo $exception->getMessage().PHP_EOL;
+    echo $exception->getResponse()->getBody().PHP_EOL;
     exit(1);
 }
