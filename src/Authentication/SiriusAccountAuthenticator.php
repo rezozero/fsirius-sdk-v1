@@ -8,7 +8,6 @@ use RZ\FSirius\AccountProvider;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
-use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\CsrfTokenBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\RememberMeBadge;
@@ -36,7 +35,7 @@ abstract class SiriusAccountAuthenticator extends AbstractAuthenticator
         if (!\is_string($username)) {
             throw new BadRequestHttpException(sprintf('The key "%s" must be a string.', $this->usernamePath));
         }
-        if (\strlen($username) > Security::MAX_USERNAME_LENGTH) {
+        if (\strlen($username) > UserBadge::MAX_USERNAME_LENGTH) {
             throw new BadCredentialsException('Invalid username.');
         }
 

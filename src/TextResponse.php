@@ -4,29 +4,28 @@ declare(strict_types=1);
 
 namespace RZ\FSirius;
 
-use Psr\Http\Message\ResponseInterface;
+use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
+use Symfony\Contracts\HttpClient\ResponseInterface;
 
-class TextResponse extends AbstractResponse
+final class TextResponse extends AbstractResponse
 {
-    private ResponseInterface $response;
-
-    private string $body;
-
     public static function getContentType(): string
     {
         return 'text/plain';
     }
 
-    public function getResponse(): ResponseInterface
-    {
-        return $this->response;
-    }
-
     public function __construct(ResponseInterface $response)
     {
-        $this->body = $response->getBody()->getContents();
-        $this->response = $response;
+        parent::__construct($response);
+    }
 
-        parse_str($this->body, $this->params);
+    /**
+     * @throws HttpExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    protected function parseParams(): void
+    {
+        parse_str($this->getBody(), $this->params);
     }
 }

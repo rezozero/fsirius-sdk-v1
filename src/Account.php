@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace RZ\FSirius;
 
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 final class Account implements UserInterface
 {
@@ -183,6 +185,9 @@ final class Account implements UserInterface
 
     /**
      * @return $this
+     *
+     * @throws HttpExceptionInterface
+     * @throws TransportExceptionInterface
      */
     public function applyResponse(AbstractResponse $response): Account
     {

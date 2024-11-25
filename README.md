@@ -1,5 +1,5 @@
 # Forum Sirius APIv1 PHP SDK
-**Use Guzzle 7**
+**Use Symfony HTTP Client**
 
 Available methods:
 

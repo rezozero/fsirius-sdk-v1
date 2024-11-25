@@ -4,28 +4,28 @@ declare(strict_types=1);
 
 namespace RZ\FSirius;
 
-use Psr\Http\Message\ResponseInterface;
+use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
+use Symfony\Contracts\HttpClient\ResponseInterface;
 
-class JsonResponse extends AbstractResponse
+final class JsonResponse extends AbstractResponse
 {
-    private ResponseInterface $response;
-    private string $body;
-
     public static function getContentType(): string
     {
         return 'application/json';
     }
 
-    public function getResponse(): ResponseInterface
-    {
-        return $this->response;
-    }
-
     public function __construct(ResponseInterface $response)
     {
-        $this->body = $response->getBody()->getContents();
-        $this->response = $response;
+        parent::__construct($response);
+    }
 
-        $this->params = json_decode($this->body, true);
+    /**
+     * @throws HttpExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    protected function parseParams(): void
+    {
+        $this->params = \json_decode($this->getBody(), true);
     }
 }
