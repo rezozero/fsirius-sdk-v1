@@ -100,22 +100,6 @@ final class Client
      * @throws HttpExceptionInterface
      * @throws TransportExceptionInterface
      */
-    public function getEventDateIds(string $sessionToken, string $eventId): array
-    {
-        $eventDateIds = $this->get('/ListeSC', [
-            'query' => [
-                'instPA' => $sessionToken,
-                'defSC' => $this->getEventQuery($eventId),
-            ],
-        ])->getParam('listeSC');
-
-        return explode(',', $eventDateIds);
-    }
-
-    /**
-     * @throws HttpExceptionInterface
-     * @throws TransportExceptionInterface
-     */
     public function getEventDateParams(string $sessionToken, string $eventId): array
     {
         $infosSC = $this->get('/ParamSC', [
