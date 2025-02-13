@@ -2,6 +2,30 @@
 
 All notable changes to project will be documented in this file.
 
+## [3.1.0](https://github.com/rezozero/fsirius-sdk-v1/compare/3.0.0...3.1.0) - 2025-02-13
+
+### ⚠ Breaking changes
+
+- Migrate FSirius and RodrigueThemis SDK to use Symfony HTTP Client instead of Guzzle
+- Removed `getEventDateIds`, use `getEventDateParams` instead
+
+### Bug Fixes
+
+- Added User-Agent for SDK HTTP-based clients - ([96611c2](https://github.com/rezozero/fsirius-sdk-v1/commit/96611c2860829cfb70967a85a057a58a30750823))
+
+### Features
+
+-  [**breaking**]Migrate FSirius and RodrigueThemis SDK to use Symfony HTTP Client instead of Guzzle - ([ca1af88](https://github.com/rezozero/fsirius-sdk-v1/commit/ca1af881ff9a7c81c7ae5c5e43e2fbfd6106c49f))
+-  [**breaking**]Removed `getEventDateIds`, use `getEventDateParams` instead - ([d110653](https://github.com/rezozero/fsirius-sdk-v1/commit/d110653427bb143819a04a93e99e43e430c6f2be))
+
+### Refactor
+
+- Installed `friendsofphp/php-cs-fixer` and refactor all PHP files style, moved to multi-staged Dockerfile for development environment - ([033a428](https://github.com/rezozero/fsirius-sdk-v1/commit/033a428650bc81f848ee619b539b0b9b29a8a453))
+
+### Testing
+
+- Upgraded phpstan dependency - ([ffc5391](https://github.com/rezozero/fsirius-sdk-v1/commit/ffc539138f0a9a567a9dc199333f11c4b1f4a7a2))
+
 ## [3.0.0](https://github.com/rezozero/fsirius-sdk-v1/compare/2.0.0...3.0.0) - 2024-05-15
 
 ### Features
