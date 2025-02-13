@@ -1,8 +1,16 @@
 <?php
 
-require(dirname(__FILE__) . "/../vendor/autoload.php");
+declare(strict_types=1);
 
-$api_auth = include dirname(__FILE__) . "/api_auth.php";
+use RZ\FSirius\AccountProvider;
+use RZ\FSirius\Client;
+use RZ\FSirius\JsonResponse;
+use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
+
+require dirname(__FILE__).'/../vendor/autoload.php';
+
+$api_auth = include dirname(__FILE__).'/api_auth.php';
 
 ini_set('date.timezone', 'Europe/Paris');
 
@@ -13,18 +21,17 @@ try {
     }
 
     $email = $argv[1];
-    // Theses credentials are only available in API dev mode.
-    $client = new RZ\FSirius\Client(
+    // These credentials are only available in API dev mode.
+    $client = new Client(
+        HttpClient::create(),
         $api_auth['url'],
         $api_auth['clientId'],
-        null,
-        RZ\JsonResponse::class,
+        JsonResponse::class,
         $api_auth['proxy']
     );
-    $accountProvider = new RZ\AccountProvider($client);
+    $accountProvider = new AccountProvider($client);
     dump($accountProvider->loadUserByUsername($argv[1]));
-} catch (\GuzzleHttp\Exception\ClientException $exception) {
-    echo $exception->getMessage() . PHP_EOL;
-    echo $exception->getResponse()->getBody(). PHP_EOL;
+} catch (ExceptionInterface $exception) {
+    echo $exception->getMessage().PHP_EOL;
     exit(1);
 }

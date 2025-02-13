@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace RZ\FSirius;
 
 class EventDate
@@ -68,21 +70,15 @@ class EventDate
         return $this->place;
     }
 
-    /**
-     * @return string
-     */
     public function getAvailability(): string
     {
         return $this->availability;
     }
 
-    /**
-     * @param string $availability
-     * @return EventDate
-     */
     public function setAvailability(string $availability): EventDate
     {
         $this->availability = $availability;
+
         return $this;
     }
 
@@ -91,9 +87,6 @@ class EventDate
         return $this->ticketingOpening;
     }
 
-    /**
-     * @return array
-     */
     public function getBody(): array
     {
         return $this->body;

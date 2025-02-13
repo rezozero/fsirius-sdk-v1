@@ -1,70 +1,54 @@
 <?php
 
+declare(strict_types=1);
+
 namespace RZ\FSirius;
 
-use Doctrine\Common\Cache\CacheProvider;
-use GuzzleHttp\Exception\GuzzleException;
+use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class Client
+final class Client
 {
     public const SESSION_ID = 'fsirius_sdk_session';
-    public const CACHE_KEY_DOMAIN = 'fsirius_sdk_token';
     public const AVAILABLE_SEATS = 'V';
     public const LATEST_SEATS = 'O';
     public const NO_MORE_SEATS = 'R';
     public const FORBIDDEN_EVENT_DATE = '-';
     public const UNAVAILABLE_INFO = '?';
 
-    protected \GuzzleHttp\Client $guzzleClient;
-    private ?CacheProvider $cacheProvider = null;
-    private string $clientId;
     private ?string $eventId = null;
-    /**
-     * @var class-string<AbstractResponse>
-     */
-    private string $responseType = JsonResponse::class;
+
+    private HttpClientInterface $client;
 
     /**
-     * @param string $endpoint
-     * @param string $clientId
-     * @param CacheProvider|null $cacheProvider
      * @param class-string<AbstractResponse> $responseType
-     * @param string|null $proxy
      */
     public function __construct(
+        HttpClientInterface $client,
         string $endpoint,
-        string $clientId,
-        CacheProvider $cacheProvider = null,
-        string $responseType = JsonResponse::class,
-        string $proxy = null
+        private readonly string $clientId,
+        private readonly string $responseType = JsonResponse::class,
+        ?string $proxy = null,
     ) {
         if (!filter_var($endpoint, FILTER_VALIDATE_URL)) {
-            throw new \InvalidArgumentException('Endpoint ' . $endpoint . ' must be a valid URL');
+            throw new \InvalidArgumentException('Endpoint '.$endpoint.' must be a valid URL');
         }
 
-        $this->responseType = $responseType;
         $config = [
             'base_uri' => $endpoint,
             'headers' => [
                 'Accept' => call_user_func([$this->responseType, 'getContentType']),
-                'X-Origin' => 'RZ-FSirius-SDK',
+                'User-Agent' => 'RZ-FSirius-SDK/3.1',
             ],
             'timeout' => 4,
-            'connect_timeout' => 2,
-            'allow_redirects' => [
-                'max'       => 3,       // allow at most 10 redirects.
-                'strict'    => true,     // use "strict" RFC compliant redirects.
-                'referer'   => true,     // add a Referer header
-                'protocols' => ['http', 'https'] // only allow https URLs
-            ]
+            'max_redirects' => 3,
         ];
-        if ($proxy !== null) {
+        if (null !== $proxy) {
             $config['proxy'] = $proxy;
         }
 
-        $this->guzzleClient = new \GuzzleHttp\Client($config);
-        $this->cacheProvider = $cacheProvider;
-        $this->clientId = $clientId;
+        $this->client = $client->withOptions($config);
     }
 
     /**
@@ -76,87 +60,27 @@ class Client
     }
 
     /**
-     * @return $this
-     */
-    public function setTextResponseType(): Client
-    {
-        $this->responseType = TextResponse::class;
-        return $this;
-    }
-
-    /**
-     * @return $this
-     */
-    public function setJsonResponseType(): Client
-    {
-        $this->responseType = JsonResponse::class;
-        return $this;
-    }
-
-
-    /**
-     * @return CacheProvider|null
-     */
-    public function getCacheProvider(): ?CacheProvider
-    {
-        return $this->cacheProvider;
-    }
-
-    /**
-     * @param CacheProvider $cacheProvider
-     * @return Client
-     */
-    public function setCacheProvider(CacheProvider $cacheProvider): Client
-    {
-        $this->cacheProvider = $cacheProvider;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCacheKey(): string
-    {
-        return sha1(static::CACHE_KEY_DOMAIN . $this->eventId . $this->clientId);
-    }
-
-    /**
-     * @return \GuzzleHttp\Client
-     */
-    public function getGuzzleClient(): \GuzzleHttp\Client
-    {
-        return $this->guzzleClient;
-    }
-
-    /**
      * GET request with no credentials.
      *
-     * @param string $url
-     * @param array $options
-     * @return AbstractResponse
-     * @throws GuzzleException
+     * @throws TransportExceptionInterface
      */
     public function get(string $url, array $options = []): AbstractResponse
     {
         $responseType = $this->getResponseType();
-        return new $responseType($this->getGuzzleClient()->get($url, $options));
+
+        return new $responseType($this->client->request('GET', $url, $options));
     }
 
-    /**
-     * @param string $eventId
-     * @return string
-     */
     protected function getEventQuery(string $eventId): string
     {
-        return 'spec=' . $eventId;
+        return 'spec='.$eventId;
     }
 
     /**
      * Get valid season items.
      *
-     * @param array $options
-     * @return string|null
-     * @throws GuzzleException
+     * @throws HttpExceptionInterface
+     * @throws TransportExceptionInterface
      */
     public function getSessionToken(array $options = []): ?string
     {
@@ -166,35 +90,15 @@ class Client
         return $this->get('/Contexte', [
             'query' => [
                 'inst' => $this->clientId,
-                'session' => $this->clientId . '_' . static::SESSION_ID,
+                'session' => $this->clientId.'_'.self::SESSION_ID,
                 'paramsURL' => $compiledOptions,
-            ]
+            ],
         ])->getSessionToken();
     }
 
     /**
-     * @param string $sessionToken
-     * @param string $eventId
-     * @return array
-     * @throws GuzzleException
-     */
-    public function getEventDateIds(string $sessionToken, string $eventId): array
-    {
-        $eventDateIds = $this->get('/ListeSC', [
-            'query' => [
-                'instPA' => $sessionToken,
-                'defSC' => $this->getEventQuery($eventId),
-            ]
-        ])->getParam('listeSC');
-
-        return explode(',', $eventDateIds);
-    }
-
-    /**
-     * @param string $sessionToken
-     * @param string $eventId
-     * @return array
-     * @throws GuzzleException
+     * @throws HttpExceptionInterface
+     * @throws TransportExceptionInterface
      */
     public function getEventDateParams(string $sessionToken, string $eventId): array
     {
@@ -202,7 +106,7 @@ class Client
             'query' => [
                 'instPA' => $sessionToken,
                 'defSC' => $this->getEventQuery($eventId),
-            ]
+            ],
         ])->getParam('infosSC');
 
         if (is_array($infosSC) && isset($infosSC['apiParamSC'])) {
@@ -213,10 +117,8 @@ class Client
     }
 
     /**
-     * @param string $sessionToken
-     * @param string $eventId
-     * @return array
-     * @throws GuzzleException
+     * @throws HttpExceptionInterface
+     * @throws TransportExceptionInterface
      */
     public function getEventDateAvailability(string $sessionToken, string $eventId): array
     {
@@ -224,7 +126,7 @@ class Client
             'query' => [
                 'instPA' => $sessionToken,
                 'defSC' => $this->getEventQuery($eventId),
-            ]
+            ],
         ]);
 
         $eventDates = [];
@@ -264,12 +166,8 @@ class Client
     }
 
     /**
-     * @param string $sessionToken
-     * @param string|null $bix
-     * @param string|null $email
-     *
-     * @return Account|null
-     * @throws GuzzleException
+     * @throws HttpExceptionInterface
+     * @throws TransportExceptionInterface
      */
     public function getAccount(string $sessionToken, ?string $bix, ?string $email): ?Account
     {
@@ -278,13 +176,14 @@ class Client
             if ($response->isStatusOk()) {
                 return (new Account())->applyResponse($response);
             }
+
             return null;
         } elseif (null !== $email && filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $response = $this->get('/TestCompte', [
                 'query' => [
                     'instPA' => $sessionToken,
                     'email' => $email,
-                ]
+                ],
             ]);
             if ($response->isStatusOk()) {
                 /*
@@ -303,20 +202,18 @@ class Client
                             $account->applyResponse($response);
                         }
                     }
+
                     return $account;
                 }
             }
+
             return null;
         }
         throw new \InvalidArgumentException('You must provide a bix or a valid email');
     }
 
     /**
-     * @param string $sessionToken
-     * @param string $bix
-     *
-     * @return AbstractResponse
-     * @throws GuzzleException
+     * @throws TransportExceptionInterface
      */
     protected function doGetInfoClient(string $sessionToken, string $bix): AbstractResponse
     {
@@ -324,24 +221,21 @@ class Client
             'query' => [
                 'instPA' => $sessionToken,
                 'bix' => $bix,
-            ]
+            ],
         ]);
     }
 
     /**
      * Process availabilities with medium calculus.
-     *
-     * @param array $availabilities
-     * @return string
      */
     protected function getMediumAvailabilities(array $availabilities = []): string
     {
         if (count($availabilities) > 0) {
             $numericDispo = [
-                static::FORBIDDEN_EVENT_DATE => 0,
-                static::AVAILABLE_SEATS => 1,
-                static::LATEST_SEATS => 2,
-                static::NO_MORE_SEATS => 3,
+                self::FORBIDDEN_EVENT_DATE => 0,
+                self::AVAILABLE_SEATS => 1,
+                self::LATEST_SEATS => 2,
+                self::NO_MORE_SEATS => 3,
             ];
             $numericDispoKeys = array_keys($numericDispo);
             $mediumDispo = 0.0;
@@ -353,40 +247,37 @@ class Client
             }
 
             $mediumDispo /= count($availabilities);
+
             return (string) $numericDispoKeys[(int) floor($mediumDispo)];
         }
 
-        return static::NO_MORE_SEATS;
+        return self::NO_MORE_SEATS;
     }
 
     /**
      * Process availabilities with at least one of the best availability found.
-     *
-     * @param array $availabilities
-     * @return string
      */
     protected function getBestAvailabilities(array $availabilities = []): string
     {
         if (count($availabilities) > 0) {
-            if (in_array(static::AVAILABLE_SEATS, $availabilities)) {
-                return static::AVAILABLE_SEATS;
+            if (in_array(self::AVAILABLE_SEATS, $availabilities)) {
+                return self::AVAILABLE_SEATS;
             }
-            if (in_array(static::LATEST_SEATS, $availabilities)) {
-                return static::LATEST_SEATS;
+            if (in_array(self::LATEST_SEATS, $availabilities)) {
+                return self::LATEST_SEATS;
             }
-            return static::NO_MORE_SEATS;
+
+            return self::NO_MORE_SEATS;
         }
 
-        return static::UNAVAILABLE_INFO;
+        return self::UNAVAILABLE_INFO;
     }
 
     /**
-     * @param string $sessionToken
-     * @param string $eventId
-     *
      * @return EventDate[]
-     * @throws GuzzleException
-     * @throws \Exception
+     *
+     * @throws HttpExceptionInterface
+     * @throws TransportExceptionInterface
      */
     public function getEventDates(string $sessionToken, string $eventId): array
     {
@@ -399,7 +290,7 @@ class Client
             /*
              * Set event-date availability only if we got an availability for a given sessionId.
              */
-            if ("" !== $eventDate->getId() && isset($eventDatesAvailability[$eventDate->getId()])) {
+            if ('' !== $eventDate->getId() && isset($eventDatesAvailability[$eventDate->getId()])) {
                 $eventDate->setAvailability($eventDatesAvailability[$eventDate->getId()]);
             }
             $eventDates[] = $eventDate;
@@ -413,13 +304,10 @@ class Client
         return $this->eventId;
     }
 
-    /**
-     * @param string|null $eventId
-     * @return Client
-     */
     public function setEventId(?string $eventId): Client
     {
         $this->eventId = $eventId;
+
         return $this;
     }
 }
