@@ -39,7 +39,7 @@ final class Client
             'base_uri' => $endpoint,
             'headers' => [
                 'Accept' => call_user_func([$this->responseType, 'getContentType']),
-                'X-Origin' => 'RZ-FSirius-SDK',
+                'User-Agent' => 'RZ-FSirius-SDK/3.0',
             ],
             'timeout' => 4,
             'max_redirects' => 3,
