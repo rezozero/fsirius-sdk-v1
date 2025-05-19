@@ -2,6 +2,12 @@
 
 All notable changes to project will be documented in this file.
 
+## [4.0.0](https://github.com/rezozero/fsirius-sdk-v1/compare/3.1.0...4.0.0) - 2025-05-19
+
+### Features
+
+- Add ExportsClient for handling exported data endpoints - ([ef00d1c](https://github.com/rezozero/fsirius-sdk-v1/commit/ef00d1cbe249fb87865282a0fac41505565f5097))
+
 ## [3.1.0](https://github.com/rezozero/fsirius-sdk-v1/compare/3.0.0...3.1.0) - 2025-02-13
 
 ### ⚠ Breaking changes
