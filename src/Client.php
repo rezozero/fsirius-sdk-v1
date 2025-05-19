@@ -8,7 +8,7 @@ use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-final class Client
+class Client
 {
     public const SESSION_ID = 'fsirius_sdk_session';
     public const AVAILABLE_SEATS = 'V';
@@ -17,9 +17,9 @@ final class Client
     public const FORBIDDEN_EVENT_DATE = '-';
     public const UNAVAILABLE_INFO = '?';
 
-    private ?string $eventId = null;
+    protected ?string $eventId = null;
 
-    private HttpClientInterface $client;
+    protected HttpClientInterface $client;
 
     /**
      * @param class-string<AbstractResponse> $responseType
@@ -27,8 +27,8 @@ final class Client
     public function __construct(
         HttpClientInterface $client,
         string $endpoint,
-        private readonly string $clientId,
-        private readonly string $responseType = JsonResponse::class,
+        protected readonly string $clientId,
+        protected readonly string $responseType = JsonResponse::class,
         ?string $proxy = null,
     ) {
         if (!filter_var($endpoint, FILTER_VALIDATE_URL)) {
