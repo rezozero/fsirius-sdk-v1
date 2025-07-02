@@ -15,7 +15,6 @@
         }
     },
     "require": {
-        "php": ">=8.2",
         "doctrine/cache": "^1.7.1",
         "ext-json": "*",
         "symfony/security-http": "6.4.*",
@@ -23,6 +22,7 @@
     },
     "require-dev": {
         "phpstan/phpstan": "~1.11.8",
+        "rector/rector": "*",
         "symfony/error-handler": "6.4.*"
     },
     "extra": {
