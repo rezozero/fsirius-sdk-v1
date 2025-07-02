@@ -10,6 +10,7 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 
 final class JsonResponse extends AbstractResponse
 {
+    #[\Override]
     public static function getContentType(): string
     {
         return 'application/json';
@@ -24,6 +25,7 @@ final class JsonResponse extends AbstractResponse
      * @throws HttpExceptionInterface
      * @throws TransportExceptionInterface
      */
+    #[\Override]
     protected function parseParams(): void
     {
         $this->params = \json_decode($this->getBody(), true);

@@ -15,6 +15,7 @@
         }
     },
     "require": {
+        "php": ">=8.3",
         "doctrine/cache": "^1.7.1",
         "ext-json": "*",
         "symfony/security-http": "6.4.*",

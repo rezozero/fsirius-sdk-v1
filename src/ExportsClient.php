@@ -30,6 +30,7 @@ final class ExportsClient extends Client
     /**
      * @return string no need for a session token for the exported data endpoints
      */
+    #[\Override]
     public function getSessionToken(array $options = []): string
     {
         return '';
@@ -79,13 +80,12 @@ final class ExportsClient extends Client
     public function getEventDateIds(string $sessionToken, string $eventId): array
     {
         return array_map(
-            function (array $eventDate) {
-                return $eventDate['sc'];
-            },
+            fn (array $eventDate) => $eventDate['sc'],
             $this->getEventDateParams($sessionToken, $eventId)
         );
     }
 
+    #[\Override]
     public function getEventDateParams(string $sessionToken, string $eventId): array
     {
         $catalog = $this->getExportedCatalog();
@@ -93,11 +93,10 @@ final class ExportsClient extends Client
             throw new \RuntimeException('Invalid catalog data');
         }
 
-        return array_values(array_filter($catalog['infosSC']['apiParamSC'], function (array $item) use ($eventId) {
-            return $item['spec'] === intval($eventId);
-        }));
+        return array_values(array_filter($catalog['infosSC']['apiParamSC'], fn (array $item) => $item['spec'] === intval($eventId)));
     }
 
+    #[\Override]
     public function getEventDateAvailability(string $sessionToken, string $eventId): array
     {
         $eventDatesResponse = $this->getExportedAvailabilities();
@@ -120,7 +119,7 @@ final class ExportsClient extends Client
             if (!isset($eventDate['id']) || !isset($eventDate['dispo'])) {
                 continue;
             }
-            $eventDates[$eventDate['id']] = $this->getBestAvailabilities(mb_str_split($eventDate['dispo']));
+            $eventDates[$eventDate['id']] = $this->getBestAvailabilities(mb_str_split((string) $eventDate['dispo']));
         }
 
         return $eventDates;

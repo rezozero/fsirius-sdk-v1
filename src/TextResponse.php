@@ -10,6 +10,7 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 
 final class TextResponse extends AbstractResponse
 {
+    #[\Override]
     public static function getContentType(): string
     {
         return 'text/plain';
@@ -24,6 +25,7 @@ final class TextResponse extends AbstractResponse
      * @throws HttpExceptionInterface
      * @throws TransportExceptionInterface
      */
+    #[\Override]
     protected function parseParams(): void
     {
         parse_str($this->getBody(), $this->params);

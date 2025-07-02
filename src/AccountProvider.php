@@ -13,16 +13,14 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 class AccountProvider implements UserProviderInterface
 {
-    private Client $client;
-
-    public function __construct(Client $client)
+    public function __construct(private readonly Client $client)
     {
-        $this->client = $client;
     }
 
     /**
      * @throws TransportExceptionInterface
      */
+    #[\Override]
     public function loadUserByIdentifier(string $identifier): Account
     {
         try {
@@ -50,6 +48,7 @@ class AccountProvider implements UserProviderInterface
     /**
      * @throws TransportExceptionInterface
      */
+    #[\Override]
     public function refreshUser(UserInterface $user): Account
     {
         try {
@@ -70,6 +69,7 @@ class AccountProvider implements UserProviderInterface
     /**
      * @param class-string $class
      */
+    #[\Override]
     public function supportsClass(string $class): bool
     {
         return Account::class === $class;
