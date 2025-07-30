@@ -245,19 +245,22 @@ final class Account implements UserInterface
         ];
     }
 
-    public function getPassword(): ?string
+    public function getPassword(): null
     {
         return null;
     }
 
-    public function getSalt(): ?string
+    public function getSalt(): null
     {
         return null;
     }
 
+    /**
+     * @return non-empty-string
+     */
     public function getUsername(): string
     {
-        if (null === $this->getEmail()) {
+        if (empty($this->getEmail())) {
             throw new \RuntimeException('Account username cannot null');
         }
 

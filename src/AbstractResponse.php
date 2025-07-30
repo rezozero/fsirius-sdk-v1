@@ -13,7 +13,7 @@ abstract class AbstractResponse
     abstract public static function getContentType(): string;
 
     /**
-     * @var array<string, mixed>|null
+     * @var array<int|string, array|string>|null
      */
     protected ?array $params = null;
 
