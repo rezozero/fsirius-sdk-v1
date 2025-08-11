@@ -6,13 +6,12 @@ namespace RZ\FSirius;
 
 class EventDate
 {
-    private array $body;
-    private string $id;
-    private string $eventId;
-    private bool $enabled;
-    private string $name;
-    private \DateTime $date;
-    private string $place;
+    private readonly string $id;
+    private readonly string $eventId;
+    private readonly bool $enabled;
+    private readonly string $name;
+    private readonly \DateTime $date;
+    private readonly string $place;
     private string $availability;
     private ?\DateTime $ticketingOpening = null;
 
@@ -21,20 +20,19 @@ class EventDate
      *
      * @throws \Exception
      */
-    public function __construct(array $body)
+    public function __construct(private readonly array $body)
     {
-        $this->body = $body;
-        $this->id = (string) $body['sc'];
-        $this->eventId = (string) $body['spec'];
-        $this->enabled = boolval($body['aff'] ?? false);
-        $this->name = trim(str_replace('|', '\n', (string) $body['titre']));
+        $this->id = (string) $this->body['sc'];
+        $this->eventId = (string) $this->body['spec'];
+        $this->enabled = boolval($this->body['aff'] ?? false);
+        $this->name = trim(str_replace('|', '\n', (string) $this->body['titre']));
         $this->date = new \DateTime();
-        $this->date->setTimestamp($body['date']);
-        $this->place = trim($body['salle']);
+        $this->date->setTimestamp($this->body['date']);
+        $this->place = trim((string) $this->body['salle']);
         $this->availability = Client::AVAILABLE_SEATS;
-        if ($body['ovl'] > -1) {
+        if ($this->body['ovl'] > -1) {
             $this->ticketingOpening = new \DateTime();
-            $this->ticketingOpening->setTimestamp($body['ovl']);
+            $this->ticketingOpening->setTimestamp($this->body['ovl']);
         } else {
             $this->ticketingOpening = null;
         }

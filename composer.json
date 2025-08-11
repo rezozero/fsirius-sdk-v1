@@ -15,20 +15,21 @@
         }
     },
     "require": {
-        "php": ">=8.2",
+        "php": ">=8.3",
         "doctrine/cache": "^1.7.1",
         "ext-json": "*",
-        "symfony/security-http": "6.4.*",
-        "symfony/http-client": "6.4.*"
+        "symfony/security-http": "7.3.*",
+        "symfony/http-client": "7.3.*"
     },
     "require-dev": {
-        "phpstan/phpstan": "~1.11.8",
-        "symfony/error-handler": "6.4.*"
+        "phpstan/phpstan": "*",
+        "rector/rector": "*",
+        "symfony/error-handler": "7.3.*"
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "4.x-dev",
-            "dev-develop": "5.x-dev"
+            "dev-master": "5.x-dev",
+            "dev-develop": "6.x-dev"
         }
     }
 }

@@ -133,8 +133,8 @@ class Client
         /*
          * For the moment listeSC is still a imploded array
          */
-        $eventDateIds = explode(',', $eventDatesResponse->getParam('listeSC'));
-        $eventCategories = explode(',', $eventDatesResponse->getParam('listeCat'));
+        $eventDateIds = explode(',', (string) $eventDatesResponse->getParam('listeSC'));
+        $eventCategories = explode(',', (string) $eventDatesResponse->getParam('listeCat'));
         $eventCategoriesCount = count($eventCategories);
 
         /*
@@ -147,8 +147,8 @@ class Client
          * dispoVOR is used for each SC AND Cat
          */
         $dispoVOR = $eventDatesResponse->getParam('dispoVOR');
-        if (strlen($dispoVOR) > 0) {
-            $eventDateAvailability = str_split($dispoVOR);
+        if (strlen((string) $dispoVOR) > 0) {
+            $eventDateAvailability = str_split((string) $dispoVOR);
 
             foreach ($eventDateIds as $i => $eventDateId) {
                 $eventAvailabilities = [];

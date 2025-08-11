@@ -8,9 +8,9 @@ use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
 
-require dirname(__FILE__).'/../vendor/autoload.php';
+require __DIR__.'/../vendor/autoload.php';
 
-$api_auth = include dirname(__FILE__).'/api_auth.php';
+$api_auth = include __DIR__.'/api_auth.php';
 
 ini_set('date.timezone', 'Europe/Paris');
 

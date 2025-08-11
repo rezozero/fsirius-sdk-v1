@@ -10,8 +10,8 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 final class Account implements UserInterface
 {
-    public const BASE_ROLE = 'ROLE_FORUMSIRIUS_USER';
-    public const PRO_ROLE = 'ROLE_FORUMSIRIUS_PRO_USER';
+    public const string BASE_ROLE = 'ROLE_FORUMSIRIUS_USER';
+    public const string PRO_ROLE = 'ROLE_FORUMSIRIUS_PRO_USER';
 
     private ?string $title = null;
     private ?string $lastName = null;
@@ -237,6 +237,7 @@ final class Account implements UserInterface
         return $this;
     }
 
+    #[\Override]
     public function getRoles(): array
     {
         return [
@@ -244,30 +245,35 @@ final class Account implements UserInterface
         ];
     }
 
-    public function getPassword(): ?string
+    public function getPassword(): null
     {
         return null;
     }
 
-    public function getSalt(): ?string
+    public function getSalt(): null
     {
         return null;
     }
 
+    /**
+     * @return non-empty-string
+     */
     public function getUsername(): string
     {
-        if (null === $this->getEmail()) {
+        if (empty($this->getEmail())) {
             throw new \RuntimeException('Account username cannot null');
         }
 
         return $this->getEmail();
     }
 
+    #[\Override]
     public function eraseCredentials(): void
     {
         // do nothing, there are no credentials in Sirius account
     }
 
+    #[\Override]
     public function getUserIdentifier(): string
     {
         return $this->getUsername();

@@ -29,6 +29,7 @@ abstract class SiriusAccountAuthenticator extends AbstractAuthenticator
     ) {
     }
 
+    #[\Override]
     public function authenticate(Request $request): Passport
     {
         $username = $request->request->get($this->usernamePath);
@@ -40,9 +41,7 @@ abstract class SiriusAccountAuthenticator extends AbstractAuthenticator
         }
 
         return new Passport(
-            new UserBadge($username, function ($userIdentifier) {
-                return $this->accountProvider->loadUserByIdentifier($userIdentifier);
-            }),
+            new UserBadge($username, fn ($userIdentifier) => $this->accountProvider->loadUserByIdentifier($userIdentifier)),
             $this->credentials,
             [
                 new CsrfTokenBadge('authenticate', $request->get('_csrf_token')),
