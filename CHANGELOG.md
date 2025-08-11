@@ -2,6 +2,18 @@
 
 All notable changes to project will be documented in this file.
 
+## [5.0.0](https://github.com/rezozero/fsirius-sdk-v1/compare/4.0.0...5.0.0) - 2025-08-11
+
+### ⚠ Breaking changes
+
+- Upgrade to php8.3
+
+### Refactor
+
+-  [**breaking**]Upgrade to php8.3 - ([dd70002](https://github.com/rezozero/fsirius-sdk-v1/commit/dd70002b12d5e46296241e1447b8a245427a7a55))
+- Lint files with Rector and PHP-cs-fixer - ([acbced9](https://github.com/rezozero/fsirius-sdk-v1/commit/acbced954b1b775e5e20af537a1286b2f0a516e6))
+- Migrate to Symfony 7.3.* - ([436cb3a](https://github.com/rezozero/fsirius-sdk-v1/commit/436cb3a69923f05c26ec63657155ecd83230b5dd))
+
 ## [4.0.0](https://github.com/rezozero/fsirius-sdk-v1/compare/3.1.0...4.0.0) - 2025-05-19
 
 ### Features
