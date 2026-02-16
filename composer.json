@@ -18,13 +18,13 @@
         "php": ">=8.3",
         "doctrine/cache": "^1.7.1",
         "ext-json": "*",
-        "symfony/security-http": "7.3.*",
-        "symfony/http-client": "7.3.*"
+        "symfony/security-http": "7.4.*",
+        "symfony/http-client": "7.4.*"
     },
     "require-dev": {
         "phpstan/phpstan": "*",
         "rector/rector": "*",
-        "symfony/error-handler": "7.3.*"
+        "symfony/error-handler": "7.4.*"
     },
     "extra": {
         "branch-alias": {
