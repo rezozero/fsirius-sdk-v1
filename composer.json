@@ -1,0 +1,35 @@
+{
+    "name": "rezozero/fsirius-sdk-v1",
+    "description": "Forum Sirius APIv1 PHP SDK",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ambroise Maupate",
+            "email": "ambroise@rezo-zero.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "RZ\\FSirius\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=8.3",
+        "doctrine/cache": "^1.7.1",
+        "ext-json": "*",
+        "symfony/security-http": "7.4.*",
+        "symfony/http-client": "7.4.*"
+    },
+    "require-dev": {
+        "phpstan/phpstan": "*",
+        "rector/rector": "*",
+        "symfony/error-handler": "7.4.*"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "5.x-dev",
+            "dev-develop": "6.x-dev"
+        }
+    }
+}
