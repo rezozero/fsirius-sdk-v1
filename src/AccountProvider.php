@@ -13,11 +13,8 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 class AccountProvider implements UserProviderInterface
 {
-    private Client $client;
-
-    public function __construct(Client $client)
+    public function __construct(private readonly Client $client)
     {
-        $this->client = $client;
     }
 
     /**
