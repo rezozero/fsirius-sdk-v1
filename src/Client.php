@@ -19,7 +19,7 @@ final class Client
 
     private ?string $eventId = null;
 
-    private HttpClientInterface $client;
+    private readonly HttpClientInterface $client;
 
     /**
      * @param class-string<AbstractResponse> $responseType
@@ -71,7 +71,7 @@ final class Client
         return new $responseType($this->client->request('GET', $url, $options));
     }
 
-    protected function getEventQuery(string $eventId): string
+    private function getEventQuery(string $eventId): string
     {
         return 'spec='.$eventId;
     }
@@ -133,8 +133,8 @@ final class Client
         /*
          * For the moment listeSC is still a imploded array
          */
-        $eventDateIds = explode(',', $eventDatesResponse->getParam('listeSC'));
-        $eventCategories = explode(',', $eventDatesResponse->getParam('listeCat'));
+        $eventDateIds = explode(',', (string) $eventDatesResponse->getParam('listeSC'));
+        $eventCategories = explode(',', (string) $eventDatesResponse->getParam('listeCat'));
         $eventCategoriesCount = count($eventCategories);
 
         /*
@@ -147,8 +147,8 @@ final class Client
          * dispoVOR is used for each SC AND Cat
          */
         $dispoVOR = $eventDatesResponse->getParam('dispoVOR');
-        if (strlen($dispoVOR) > 0) {
-            $eventDateAvailability = str_split($dispoVOR);
+        if (strlen((string) $dispoVOR) > 0) {
+            $eventDateAvailability = str_split((string) $dispoVOR);
 
             foreach ($eventDateIds as $i => $eventDateId) {
                 $eventAvailabilities = [];
@@ -215,7 +215,7 @@ final class Client
     /**
      * @throws TransportExceptionInterface
      */
-    protected function doGetInfoClient(string $sessionToken, string $bix): AbstractResponse
+    private function doGetInfoClient(string $sessionToken, string $bix): AbstractResponse
     {
         return $this->get('/InfoClient', [
             'query' => [
@@ -226,38 +226,9 @@ final class Client
     }
 
     /**
-     * Process availabilities with medium calculus.
-     */
-    protected function getMediumAvailabilities(array $availabilities = []): string
-    {
-        if (count($availabilities) > 0) {
-            $numericDispo = [
-                self::FORBIDDEN_EVENT_DATE => 0,
-                self::AVAILABLE_SEATS => 1,
-                self::LATEST_SEATS => 2,
-                self::NO_MORE_SEATS => 3,
-            ];
-            $numericDispoKeys = array_keys($numericDispo);
-            $mediumDispo = 0.0;
-
-            foreach ($availabilities as $availability) {
-                if (isset($numericDispo[$availability])) {
-                    $mediumDispo += $numericDispo[$availability];
-                }
-            }
-
-            $mediumDispo /= count($availabilities);
-
-            return (string) $numericDispoKeys[(int) floor($mediumDispo)];
-        }
-
-        return self::NO_MORE_SEATS;
-    }
-
-    /**
      * Process availabilities with at least one of the best availability found.
      */
-    protected function getBestAvailabilities(array $availabilities = []): string
+    private function getBestAvailabilities(array $availabilities = []): string
     {
         if (count($availabilities) > 0) {
             if (in_array(self::AVAILABLE_SEATS, $availabilities)) {
