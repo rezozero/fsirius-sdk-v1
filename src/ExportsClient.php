@@ -79,9 +79,7 @@ final class ExportsClient extends Client
     public function getEventDateIds(string $sessionToken, string $eventId): array
     {
         return array_map(
-            function (array $eventDate) {
-                return $eventDate['sc'];
-            },
+            fn (array $eventDate) => $eventDate['sc'],
             $this->getEventDateParams($sessionToken, $eventId)
         );
     }
@@ -93,9 +91,7 @@ final class ExportsClient extends Client
             throw new \RuntimeException('Invalid catalog data');
         }
 
-        return array_values(array_filter($catalog['infosSC']['apiParamSC'], function (array $item) use ($eventId) {
-            return $item['spec'] === intval($eventId);
-        }));
+        return array_values(array_filter($catalog['infosSC']['apiParamSC'], fn (array $item) => $item['spec'] === intval($eventId)));
     }
 
     public function getEventDateAvailability(string $sessionToken, string $eventId): array
@@ -120,7 +116,7 @@ final class ExportsClient extends Client
             if (!isset($eventDate['id']) || !isset($eventDate['dispo'])) {
                 continue;
             }
-            $eventDates[$eventDate['id']] = $this->getBestAvailabilities(mb_str_split($eventDate['dispo']));
+            $eventDates[$eventDate['id']] = $this->getBestAvailabilities(mb_str_split((string) $eventDate['dispo']));
         }
 
         return $eventDates;
