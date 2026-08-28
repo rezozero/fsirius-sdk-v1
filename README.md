@@ -1,4 +1,13 @@
 # Forum Sirius APIv1 PHP SDK
+
+> **Open-source (MIT) PHP SDK.** Source: <https://github.com/rezozero/fsirius-sdk-v1>
+
+Install with Composer:
+
+```console
+composer require rezozero/fsirius-sdk-v1
+```
+
 **Use Symfony HTTP Client**
 
 Available methods:

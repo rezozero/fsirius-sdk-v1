@@ -196,9 +196,7 @@ class Client
                     foreach ($bixGroup as $bix) {
                         $response = $this->doGetInfoClient($sessionToken, $bix);
                         if ($response->isStatusOk()) {
-                            if (null === $account) {
-                                $account = new Account();
-                            }
+                            $account ??= new Account();
                             $account->applyResponse($response);
                         }
                     }
